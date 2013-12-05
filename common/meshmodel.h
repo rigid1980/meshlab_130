@@ -122,6 +122,10 @@ public :
 		bb.Add(Tr,bbox);
 		return bb;
 	}
+
+    //mengbin
+    std::vector<int> selVertVector;
+    std::vector<int> selFaceVector;
 };
 
 /*An ack in order to avoid to duplicate code. Should be used as MeshLabRenderMesh class itself ONLY inside MeshLabRenderState and as DERIVED class in MeshModel*/

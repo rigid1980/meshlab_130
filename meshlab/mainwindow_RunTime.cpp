@@ -2299,6 +2299,9 @@ bool MainWindow::loadMesh(const QString& fileName, MeshIOInterface *pCurrentIOPl
   if(delVertNum>0 || delFaceNum>0 )
     QMessageBox::warning(this, "MeshLab Warning", QString("Warning mesh contains %1 vertices with NAN coords and %2 degenerated faces.\nCorrected.").arg(delVertNum).arg(delFaceNum) );
   meshDoc()->setBusy(false);
+
+  //mengbin
+  GLA()->setDrawMode(vcg::GLW::DMWire);
     return true;
 }
 

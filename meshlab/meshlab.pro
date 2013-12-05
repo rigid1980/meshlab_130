@@ -127,7 +127,7 @@ macx:QMAKE_POST_LINK ="cp -P ../common/libcommon.1.dylib ../distrib/meshlab.app/
 
 win32-msvc2005:LIBS		+= -L../external/lib/win32-msvc2005 -ljhead -L../distrib -lcommon 
 win32-msvc2008:LIBS		+= -L../external/lib/win32-msvc2008 -ljhead -L../distrib -lcommon 
-win32-msvc2010:LIBS		+= -LD:/math/github/meshlab_30/external/lib/win32-msvc2010 -ljhead -L../distrib -lcommon
+win32-msvc2010:LIBS		+= -LD:/math/github/meshlab_130/external/lib/win32-msvc2010 -ljhead -L../distrib -lcommon
 win32-msvc2012:LIBS		+= -L../external/lib/win32-msvc2012 -ljhead -L../distrib -lcommon
 win32-g++:LIBS        	+= -L../external/lib/win32-gcc -ljhead -L../distrib -lcommon
 
