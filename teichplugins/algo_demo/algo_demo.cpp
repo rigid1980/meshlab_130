@@ -116,6 +116,7 @@ bool AlgoDemoPlugin::applyFilter(QAction *algo, MeshDocument &md,
                              RichParameterSet & par, vcg::CallBackPos *cb)
 {
    MeshModel* pm  = md.mm();
+   if(pm == NULL) return false;
     MeshModel* prm = md.addNewMesh("","resultant mesh",true);
 
 
