@@ -762,6 +762,10 @@ void MainWindow::fillFilterMenu()
     filterMenu->addMenu(filterMenuMeshLayer);
     filterMenuRasterLayer = new MenuWithToolTip(tr("Raster Layer"),this);
     filterMenu->addMenu(filterMenuRasterLayer);
+    //mengbin
+    MenuDualLayer   = new MenuWithToolTip(tr("Dual Mesh"),this);
+    filterMenu->addMenu(MenuDualLayer);
+    /////////////
     filterMenuRangeMap = new MenuWithToolTip(tr("Range Map"),this);
     filterMenu->addMenu(filterMenuRangeMap);
     filterMenuPointSet = new MenuWithToolTip(tr("Point Set"),this);
@@ -772,6 +776,12 @@ void MainWindow::fillFilterMenu()
     filterMenu->addMenu(filterMenuTexture);
     filterMenuCamera = new MenuWithToolTip(tr("Camera"),this);
     filterMenu->addMenu(filterMenuCamera);
+
+    //mengbin
+    filterMenuLandmark = new MenuWithToolTip(tr("Landmark"),this);
+    filterMenu->addMenu(filterMenuLandmark);
+    filterMenuAlgorithm = new MenuWithToolTip(tr("Algorithm"),this);
+    filterMenu->addMenu(filterMenuAlgorithm);
 
 //#if !defined(Q_OS_MAC)
 //	connect(filterMenuSelect, SIGNAL(hovered(QAction*)), this, SLOT(showTooltip(QAction*)) );
@@ -795,11 +805,13 @@ void MainWindow::fillFilterMenu()
 	for(msi =  PM.stringFilterMap.begin(); msi != PM.stringFilterMap.end();++msi)
 	{
 		MeshFilterInterface * iFilter= msi.value();
-		QAction *filterAction = iFilter->AC((msi.key()));
+        QAction *filterAction = iFilter->AC((msi.key()));
 		QString tooltip = iFilter->filterInfo(filterAction) + "<br>" + getDecoratedFileName(filterAction->data().toString());
 		filterAction->setToolTip(tooltip);
 		//connect(filterAction, SIGNAL(hovered()), this, SLOT(showActionMenuTooltip()) );
 		connect(filterAction,SIGNAL(triggered()),this,SLOT(startFilter()));
+
+        qDebug()<<"...."<<msi.key()<<"....."<<iFilter->getClass(filterAction);
 
 		int filterClass = iFilter->getClass(filterAction);
 		if( filterClass & MeshFilterInterface::FaceColoring )
@@ -874,6 +886,15 @@ void MainWindow::fillFilterMenu()
 		{
 			filterMenuCamera->addAction(filterAction);
 		}
+        //mengbin
+        if( filterClass & MeshFilterInterface::Landmark)
+        {
+            filterMenuLandmark->addAction(filterAction);
+        }
+        if( filterClass & MeshFilterInterface::Algorithm)
+        {
+            filterMenuAlgorithm->addAction(filterAction);
+        }
 		//  MeshFilterInterface::Generic :
 		if(filterClass == 0)
 		{

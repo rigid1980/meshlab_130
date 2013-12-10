@@ -495,21 +495,29 @@ void GLArea::paintEvent(QPaintEvent */*event*/)
                         int ps = 20<(sens/2)?20:sens/2;
                         glPointSize(ps);
                         //glPointSize(sens/2);
-                        glEnable( GL_POINT_SMOOTH );
-                        glBegin (GL_POINTS);
-                        glNormal3f (0.0, 0.0, 1.0);
+						glEnable( GL_POINT_SMOOTH );
+						
+                        glDisable(GL_DEPTH_TEST);
+                        glDisable(GL_LIGHTING);
+                        glDisable(GL_TEXTURE_2D);
+                        glPushMatrix();
+                        glBegin (GL_POINTS); 
+
+                        //glNormal3f (0.0, 0.0, 1.0);
                         //glColor4f(1, 1, 0, 255);
                         glColor3f(1.0,0.0,0.0);
                         glVertex(vp->P());
-                        glEnd();
-                        glDisable(GL_POINT_SMOOTH);
 
+                        glEnd();
+                        glPopMatrix();
+						glDisable(GL_POINT_SMOOTH);
+						
 
                         int i = tri::Index(mp->cm,vp);
                         QString buf =QString("\nlm%1 v%2:(%3 %4 %5)").arg(j).arg(i).arg(vp->P()[0]).arg(vp->P()[1]).arg(vp->P()[2]);
                         vcg::glLabel::render(&painter,vp->P(),buf);
                     }
-                  }
+                }
 			}
 		  }
 		}

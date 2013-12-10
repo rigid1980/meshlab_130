@@ -320,6 +320,8 @@ public:
   }
     QMenu* meshLayerMenu() { return filterMenuMeshLayer; }
     QMenu* rasterLayerMenu() { return filterMenuRasterLayer; }
+	QMenu* MenuDualLayer;
+	QMenu* dualLayerMenu() { return MenuDualLayer; }
 	void connectRenderModeActionList(QList<RenderModeAction*>& actlist);
 
 private:
@@ -356,6 +358,9 @@ private:
   QMenu *filterMenuSampling;
   QMenu *filterMenuTexture;
   QMenu *filterMenuCamera;
+  //mengbin
+  QMenu *filterMenuLandmark;
+  QMenu *filterMenuAlgorithm;
 
     QMenu *editMenu;
 
@@ -493,6 +498,9 @@ private:
 	////////////////////////////////////////////////////
 	static QString getDecoratedFileName(const QString& name);
 	void updateRenderToolBar( RenderModeAction* act );
+	
+public:
+	GLArea* newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QString& projName = QString());
 };
 
 

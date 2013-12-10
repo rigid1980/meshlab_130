@@ -1477,6 +1477,13 @@ void MainWindow::postFilterExecution()
 			it.value().setTextureMode(GLW::TMPerWedgeMulti);
 		GLA()->updateTexture();
 	}
+
+    //mengbin
+    if(mask & MeshFilterInterface::Algorithm )
+    {
+        qDebug()<<"after algorithm executed:set wired";
+        GLA()->setDrawMode(vcg::GLW::DMWire);
+    }
 	delete obj;
 }
 
@@ -2900,4 +2907,60 @@ void MainWindow::setBestTextureModePerMesh(RenderModeAction* textact,const int m
 		vcg::GLW::TextureMode texmode = getBestTextureRenderModePerMesh(meshid);
 		rm.setTextureMode(texmode);
 	}
+}
+
+GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QString& projName)
+{
+    MultiViewer_Container *mvcont = new MultiViewer_Container(mdiarea);
+    mdiarea->addSubWindow(mvcont);
+      connect(mvcont,SIGNAL(updateMainWindowMenus()),this,SLOT(updateMenus()));
+      filterMenu->setEnabled(!filterMenu->actions().isEmpty());
+      if (!filterMenu->actions().isEmpty())
+          updateSubFiltersMenu(true,false);
+
+      GLArea* gla = this->newProject(projName);
+      if(!GLA())
+        return NULL;
+  
+    if (gla != NULL)
+    {
+        mvcont->addView(gla, Qt::Horizontal);
+        if (projName.isEmpty())
+        {
+            static int docCounter = 1;
+            mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
+            ++docCounter;
+        }
+        else
+            mvcont->meshDoc.setDocLabel(projName);
+		/*
+        mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
+        //if(mdiarea->isVisible())
+        if (gla->mvc() == NULL)
+            return NULL;
+        gla->mvc()->showMaximized();
+        layerDialog->updateTable();
+        layerDialog->updateDecoratorParsView();
+		*/
+
+    }
+
+    gla=new GLArea(mvcont, &currentGlobalParams);
+    if (gla != NULL)
+    {
+        mvcont->addView(gla, Qt::Horizontal);
+
+		/*
+        mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
+        //if(mdiarea->isVisible())
+        if (gla->mvc() == NULL)
+            return NULL;
+        gla->mvc()->showMaximized();
+        layerDialog->updateTable();
+        layerDialog->updateDecoratorParsView();
+		*/
+
+    }
+    //showLayerDlg(true);
+    return gla;
 }

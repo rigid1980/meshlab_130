@@ -15,7 +15,8 @@ SUBDIRS       = common \
                meshlabplugins/io_base\           # a few basic file formats (ply, obj, off), without this you cannot open anything
 #			   meshlabplugins/filter_meshing \
 teichplugins/landmarkcapture        \
-teichplugins/algo_demo
+teichplugins/algo_demo              \
+teichplugins/landmark_serialize
 
 #	    meshlabplugins/io_expe \
 #	    meshlabplugins/io_collada \

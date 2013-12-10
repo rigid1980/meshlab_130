@@ -243,6 +243,16 @@ void LayerDialog::showContextMenu(const QPoint& pos)
 					return;
 				}
 			}
+		}else{
+			foreach (QWidget *widget, QApplication::topLevelWidgets()) 
+			{
+				MainWindow* mainwindow = dynamic_cast<MainWindow*>(widget);
+				if (mainwindow)
+				{
+					mainwindow->meshLayerMenu()->popup(ui->meshTreeWidget->mapToGlobal(pos));
+					return;
+				}
+			}
 		}
 	}
 	// switch layer
