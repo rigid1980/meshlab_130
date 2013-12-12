@@ -320,9 +320,9 @@ public:
   }
     QMenu* meshLayerMenu() { return filterMenuMeshLayer; }
     QMenu* rasterLayerMenu() { return filterMenuRasterLayer; }
-	QMenu* MenuDualLayer;
-	QMenu* dualLayerMenu() { return MenuDualLayer; }
 	void connectRenderModeActionList(QList<RenderModeAction*>& actlist);
+	
+	
 
 private:
 	//the xml filters run in a different thread. The xmlfiltertimer starts on executeFilter and stops on postFilterExecution
@@ -498,9 +498,18 @@ private:
 	////////////////////////////////////////////////////
 	static QString getDecoratedFileName(const QString& name);
 	void updateRenderToolBar( RenderModeAction* act );
-	
+
+//mengbin	
 public:
+	QMenu* MenuDualLayer;
+	QMenu* dualLayerMenu() { return MenuDualLayer; }
+    QAction  *showDualMeshAct;
+
 	GLArea* newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QString& projName = QString());
+	void cloneMesh(CMeshO& cm, CMeshO& mesh );
+private slots:
+	GLArea* newDualMeshWindow(const QString& projName = QString());
+	
 };
 
 

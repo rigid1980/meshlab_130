@@ -2909,6 +2909,15 @@ void MainWindow::setBestTextureModePerMesh(RenderModeAction* textact,const int m
 	}
 }
 
+void MainWindow::cloneMesh(CMeshO& cm, CMeshO& mesh )
+{
+    vcg::tri::Append<CMeshO,CMeshO>::MeshCopy(cm,mesh);
+    //cm.Tr = mesh.Tr;
+    cm.Tr.SetIdentity();
+    cm.sfn = mesh.sfn;
+    cm.svn = mesh.svn;
+}
+
 GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QString& projName)
 {
     MultiViewer_Container *mvcont = new MultiViewer_Container(mdiarea);
@@ -2918,49 +2927,88 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QStri
       if (!filterMenu->actions().isEmpty())
           updateSubFiltersMenu(true,false);
 
-      GLArea* gla = this->newProject(projName);
-      if(!GLA())
-        return NULL;
-  
-    if (gla != NULL)
-    {
-        mvcont->addView(gla, Qt::Horizontal);
-        if (projName.isEmpty())
-        {
-            static int docCounter = 1;
-            mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
-            ++docCounter;
-        }
-        else
-            mvcont->meshDoc.setDocLabel(projName);
-		/*
-        mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
-        //if(mdiarea->isVisible())
-        if (gla->mvc() == NULL)
-            return NULL;
-        gla->mvc()->showMaximized();
-        layerDialog->updateTable();
-        layerDialog->updateDecoratorParsView();
-		*/
+      GLArea *gla=new GLArea(mvcont, &currentGlobalParams);
+      if (gla != NULL)
+      {
+          MeshModel* prm = gla->md()->addNewMesh("","Mesh Left",true);
+    
 
-    }
+          if(m1 != NULL)
+          {
+              cloneMesh(prm->cm,m1->cm);
+          }
 
-    gla=new GLArea(mvcont, &currentGlobalParams);
-    if (gla != NULL)
-    {
-        mvcont->addView(gla, Qt::Horizontal);
+          mvcont->addView(gla, Qt::Horizontal);
+		  gla->setDrawMode(vcg::GLW::DMWire);
+		  gla->update(); //now there is the container
+          if (projName.isEmpty())
+          {
+              static int docCounter = 1;
+              mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
+              ++docCounter;
+          }
+          else
+              mvcont->meshDoc.setDocLabel(projName);
+          mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
+          //if(mdiarea->isVisible())
+          if (gla->mvc() == NULL)
+              return NULL;
+          gla->mvc()->showMaximized();
+          layerDialog->updateTable();
+          layerDialog->updateDecoratorParsView();
+      }
 
-		/*
-        mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
-        //if(mdiarea->isVisible())
-        if (gla->mvc() == NULL)
-            return NULL;
-        gla->mvc()->showMaximized();
-        layerDialog->updateTable();
-        layerDialog->updateDecoratorParsView();
-		*/
 
-    }
-    //showLayerDlg(true);
+     GLArea *gla_right=new GLArea(mvcont, &currentGlobalParams);
+      if (gla_right != NULL)
+      {
+          if(m2 != NULL)
+          {
+              MeshModel* prm = gla_right->md()->addNewMesh("","Mesh Right",true);
+              vcg::tri::Append<CMeshO,CMeshO>::MeshCopy(prm->cm,m2->cm);
+          }
+
+          mvcont->addView(gla_right, Qt::Horizontal);
+          gla_right->setDrawMode(vcg::GLW::DMWire);
+          gla_right->update(); //now there is the container
+//          if (projName.isEmpty())
+//          {
+//              static int docCounter = 1;
+//              mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
+//              ++docCounter;
+//          }
+//          else
+//              mvcont->meshDoc.setDocLabel(projName);
+//          mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
+//          //if(mdiarea->isVisible())
+//          if (gla_right->mvc() == NULL)
+//              return NULL;
+//          gla_right->mvc()->showMaximized();
+//          layerDialog->updateTable();
+//          layerDialog->updateDecoratorParsView();
+      }
+
+
+		mvcont->updateAllViewer();
+
     return gla;
+}
+
+GLArea* MainWindow::newDualMeshWindow(const QString& projName)
+{
+    MeshModel* m1 = NULL;
+	MeshModel* m2 = NULL;
+	
+    qDebug()<<"mesh size"<<meshDoc()->meshList.size();
+	//for(int ii = 0; ii < meshDoc()->meshList.size();++ii)
+    if(meshDoc()->meshList.size() >=1)
+	{
+          m1 = meshDoc()->meshList[0];
+	}
+    if(meshDoc()->meshList.size() >=2)
+    {
+          m2 = meshDoc()->meshList[1];
+    }
+	
+    return newProjectDualMesh(m1,m2,QString("Dual Mesh Project Window"));
 }

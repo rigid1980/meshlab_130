@@ -459,6 +459,9 @@ void MainWindow::createActions()
 	showFilterEditAct = new QAction(tr("XML Plugin Editor GUI"),this);
 	showFilterEditAct->setEnabled(true);
 	connect(showFilterEditAct, SIGNAL(triggered()), this, SLOT(showXMLPluginEditorGui()));
+	
+	showDualMeshAct = new QAction(tr("&Show in Dual Mesh Window"), this);
+	connect(showDualMeshAct, SIGNAL(triggered()), this, SLOT(newDualMeshWindow()));
 
 }
 
