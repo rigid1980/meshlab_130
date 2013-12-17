@@ -105,7 +105,11 @@ GLArea::GLArea(MultiViewer_Container *mvcont, RichParameterSet *current)
 	if(mainwindow != NULL){
 		connect(this,SIGNAL(updateMainWindowMenus()),mainwindow,SLOT(updateMenus()));
 		connect(mainwindow,SIGNAL(dispatchCustomSettings(RichParameterSet&)),this,SLOT(updateCustomSettingValues(RichParameterSet&)));
-	}else{
+        //mengbin
+        connect(md(), SIGNAL(showInDual(MeshModel* m1, int ind1, MeshModel* m2,
+                int ind2, const QString& projName = QString())),mainwindow, SLOT(newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2,
+                int ind2, const QString& projName = QString())));
+    }else{
 		qDebug("The parent of the GLArea parent is not a pointer to the meshlab MainWindow.");
 	}
 
@@ -486,6 +490,7 @@ void GLArea::paintEvent(QPaintEvent */*event*/)
                 //mengbin
                 int sens = (int)800/(int(sqrt((double)mp->cm.vert.size()))-1);
                 int j=0;
+				if(meshVisibilityMap[mp->id()])
                 for (std::vector<int>::iterator it = mp->cm.selVertVector.begin() ; it != mp->cm.selVertVector.end(); ++it)
                 {
                     j++;

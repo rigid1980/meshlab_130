@@ -17,6 +17,7 @@ DEPENDPATH += $$VCGDIR \
 HEADERS = ../common/interfaces.h \
     mainwindow.h \
     glarea.h \
+    gllmarea.h \
     multiViewer_Container.h \
     multiDocViewer_Container.h \
     glarea_setting.h \
@@ -41,6 +42,7 @@ SOURCES = main.cpp \
     mainwindow_Init.cpp \
     mainwindow_RunTime.cpp \
     glarea.cpp \
+    gllmarea.cpp \
 	multiViewer_Container.cpp \
     multiDocViewer_Container.cpp \
     plugindialog.cpp \

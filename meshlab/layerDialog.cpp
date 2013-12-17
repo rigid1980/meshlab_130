@@ -73,6 +73,8 @@ LayerDialog::LayerDialog(QWidget *parent )    : QDockWidget(parent)
 	//connect(ui->menuButton, SIGNAL(clicked()), this, SLOT(showLayerMenu()));
 	//connect(mw,SIGNAL(selectedDecoration(GLArea*,QAction*)),this,SLOT(addParamsToDecorationDialog(GLArea*,QAction*)));
 	//connect(mw,SIGNAL(unSelectedDecoration(GLArea*,QAction*)),this,SLOT(removeParamsFromDecorationDialog(GLArea*,QAction*)));
+
+    ui->meshTreeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 }
 
 void LayerDialog::keyPressEvent ( QKeyEvent * event )
@@ -529,6 +531,13 @@ void LayerDialog::addDefaultNotes(QTreeWidgetItem * parent, MeshModel *meshModel
 	vertItem->setText(3, QString::number(meshModel->cm.vn));
 	parent->addChild(vertItem);
 	updateColumnNumber(vertItem);
+	
+	//mengbin
+	QTreeWidgetItem *landmarkItem = new QTreeWidgetItem();
+    landmarkItem->setText(2, QString("Landmarks"));
+    landmarkItem->setText(3, QString::number(meshModel->cm.selVertVector.size()));
+    parent->addChild(landmarkItem);
+    updateColumnNumber(landmarkItem);
 
 	std::vector<std::string> AttribNameVector;
 	vcg::tri::Allocator<CMeshO>::GetAllPerVertexAttribute< float >(meshModel->cm,AttribNameVector);

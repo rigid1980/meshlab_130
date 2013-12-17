@@ -643,6 +643,9 @@ private:
 public:
 	///add a new mesh with the given name
 	MeshModel *addNewMesh(QString fullPath, QString Label, bool setAsCurrent=true);
+		
+	//mengbin
+	void addExistingMesh(MeshModel *newMesh, bool setAsCurrent=true);
 
 	///remove the mesh from the list and delete it from memory
 	bool delMesh(MeshModel *mmToDel);
@@ -701,6 +704,15 @@ signals:
 
 	//this signal is emitted when a filter request to update the mesh in the renderingState
 	void documentUpdated();
+
+	//mengbin
+    void showInDual (MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName );
+public:
+    void newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName = QString())
+	{
+	    qDebug()<<"emit showInDual(m1,ind1, m2, ind2, projName);";
+		emit showInDual(m1,ind1, m2, ind2, projName);
+	}
 
 };// end class MeshDocument
 

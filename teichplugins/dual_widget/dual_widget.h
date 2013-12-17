@@ -30,7 +30,7 @@
 #include <common/meshmodel.h>
 #include <wrap/gl/gl_surface.h>
 //class FILTERWidget;
-class LandmarkSerializePlugin : public QObject, public MeshFilterInterface
+class DualWidgetPlugin : public QObject, public MeshFilterInterface
 {
 	Q_OBJECT
 	MESHLAB_PLUGIN_IID_EXPORTER(MESH_FILTER_INTERFACE_IID)
@@ -44,17 +44,22 @@ public:
 
 // Methods
 public:
-	enum { FP_LANDMARK_SERIALIZE_IMPORT,
-         FP_LANDMARK_SERIALIZE_EXPORT } ;
+	enum { FP_DUAL_WIDGET} ;
 
-	LandmarkSerializePlugin();
-	~LandmarkSerializePlugin();
+	DualWidgetPlugin();
+	~DualWidgetPlugin();
 	
     virtual QString     filterName      (FilterIDType algoId) const;
     virtual QString		filterInfo(FilterIDType algoId) const;
 
     virtual FilterClass getClass(QAction *);
     virtual int         getRequirements (QAction *action);
+
+//    virtual FilterClass getClass(QAction *filter)
+//	{
+//		if(ID(filter)==FP_DUAL_DUAL_WIDGET) return MeshAlgoInterface::FaceColoring;
+//	   	else return MeshAlgoInterface::VertexColoring;
+//	};
 	
 	virtual       void        initParameterSet(QAction *,
 	                                           MeshModel &/*m*/,
@@ -63,13 +68,9 @@ public:
                                                MeshDocument &md,
                                                RichParameterSet & /*parent*/,
 	                                           vcg::CallBackPos * cb) ;
-
 	
 private:
 	bool init;
-												   
-	QString landmarkFilePath;
-	QString landmarkFileName;
 
 };
 

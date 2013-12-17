@@ -16,7 +16,8 @@ SUBDIRS       = common \
 #			   meshlabplugins/filter_meshing \
 teichplugins/landmarkcapture        \
 teichplugins/algo_demo              \
-teichplugins/landmark_serialize
+teichplugins/landmark_serialize     \
+teichplugins/dual_widget     \
 
 #	    meshlabplugins/io_expe \
 #	    meshlabplugins/io_collada \

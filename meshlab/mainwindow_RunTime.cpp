@@ -49,6 +49,7 @@
 #include "../common/meshlabdocumentbundler.h"
 #include "../common/mlapplication.h"
 
+#include "gllmarea.h"
 
 using namespace std;
 using namespace vcg;
@@ -303,6 +304,12 @@ void MainWindow::updateSubFiltersMenu( const bool createmenuenabled,const bool v
 	updateMenuItems(filterMenuTexture,validmeshdoc);
 	filterMenuCamera->setEnabled(validmeshdoc);
 	updateMenuItems(filterMenuCamera,validmeshdoc);
+
+    //mengbin
+    filterMenuLandmark->setEnabled(validmeshdoc);
+    updateMenuItems(filterMenuLandmark,validmeshdoc);
+	filterMenuAlgorithm->setEnabled(validmeshdoc);
+    updateMenuItems(filterMenuAlgorithm,validmeshdoc);
 }
 
 void MainWindow::updateMenuItems(QMenu* menu,const bool enabled)
@@ -2916,10 +2923,13 @@ void MainWindow::cloneMesh(CMeshO& cm, CMeshO& mesh )
     cm.Tr.SetIdentity();
     cm.sfn = mesh.sfn;
     cm.svn = mesh.svn;
+	
+    cm.selVertVector = mesh.selVertVector;
 }
 
-GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QString& projName)
+GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName)
 {
+    qDebug()<<"MainWindow::newProjectDualMesh...";
     MultiViewer_Container *mvcont = new MultiViewer_Container(mdiarea);
     mdiarea->addSubWindow(mvcont);
       connect(mvcont,SIGNAL(updateMainWindowMenus()),this,SLOT(updateMenus()));
@@ -2927,20 +2937,26 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QStri
       if (!filterMenu->actions().isEmpty())
           updateSubFiltersMenu(true,false);
 
-      GLArea *gla=new GLArea(mvcont, &currentGlobalParams);
-      if (gla != NULL)
+      GLLMArea *gla_left=new GLLMArea(mvcont, &currentGlobalParams);
+      if (gla_left != NULL)
       {
-          MeshModel* prm = gla->md()->addNewMesh("","Mesh Left",true);
-    
+			/*
+		          MeshModel* prm = gla_left->md()->addNewMesh("","Mesh Left",true);
+		          if(m1 != NULL)
+		          {
+		              cloneMesh(prm->cm,m1->cm);
+					  gla_left->setModelInd(0);
+		          }
+		  */
+		  if(m1 != NULL){
+			gla_left->md()->addExistingMesh(m1,true);
+			gla_left->setModelInd(ind1);
+		  }
+              
 
-          if(m1 != NULL)
-          {
-              cloneMesh(prm->cm,m1->cm);
-          }
-
-          mvcont->addView(gla, Qt::Horizontal);
-		  gla->setDrawMode(vcg::GLW::DMWire);
-		  gla->update(); //now there is the container
+          mvcont->addView(gla_left, Qt::Horizontal);
+		  gla_left->setDrawMode(vcg::GLW::DMWire);
+		  gla_left->update(); //now there is the container
           if (projName.isEmpty())
           {
               static int docCounter = 1;
@@ -2951,24 +2967,32 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QStri
               mvcont->meshDoc.setDocLabel(projName);
           mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
           //if(mdiarea->isVisible())
-          if (gla->mvc() == NULL)
+          if (gla_left->mvc() == NULL)
               return NULL;
-          gla->mvc()->showMaximized();
+          gla_left->mvc()->showMaximized();
           layerDialog->updateTable();
           layerDialog->updateDecoratorParsView();
       }
 
 
-     GLArea *gla_right=new GLArea(mvcont, &currentGlobalParams);
+     GLLMArea *gla_right=new GLLMArea(mvcont, &currentGlobalParams);
+	 
       if (gla_right != NULL)
       {
-          if(m2 != NULL)
-          {
-              MeshModel* prm = gla_right->md()->addNewMesh("","Mesh Right",true);
-              vcg::tri::Append<CMeshO,CMeshO>::MeshCopy(prm->cm,m2->cm);
-          }
-
-          mvcont->addView(gla_right, Qt::Horizontal);
+			/*
+		  MeshModel* prm = gla_right->md()->addNewMesh("","Mesh Right",true);
+	          if(m2 != NULL)
+	          {           
+	              cloneMesh(prm->cm,m2->cm);
+				  gla_right->setModelInd(1);
+	          }
+		*/
+		 if(m2 != NULL){
+			gla_right->md()->addExistingMesh(m2,true);
+			gla_right->setModelInd(ind2);
+		 }
+              
+		  mvcont->addView(gla_right, Qt::Horizontal);
           gla_right->setDrawMode(vcg::GLW::DMWire);
           gla_right->update(); //now there is the container
 //          if (projName.isEmpty())
@@ -2991,24 +3015,28 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QStri
 
 		mvcont->updateAllViewer();
 
-    return gla;
+    return gla_left;
 }
 
 GLArea* MainWindow::newDualMeshWindow(const QString& projName)
 {
     MeshModel* m1 = NULL;
 	MeshModel* m2 = NULL;
+	int ind1 = -1;
+	int ind2 = -1;
 	
     qDebug()<<"mesh size"<<meshDoc()->meshList.size();
 	//for(int ii = 0; ii < meshDoc()->meshList.size();++ii)
     if(meshDoc()->meshList.size() >=1)
 	{
           m1 = meshDoc()->meshList[0];
+		  ind1 = 0;
 	}
     if(meshDoc()->meshList.size() >=2)
     {
           m2 = meshDoc()->meshList[1];
+		  ind2 = 1;
     }
 	
-    return newProjectDualMesh(m1,m2,QString("Dual Mesh Project Window"));
+    return newProjectDualMesh(m1,ind1, m2, ind2, QString("Dual Mesh Project Window"));
 }

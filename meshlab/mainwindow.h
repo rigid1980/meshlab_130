@@ -75,7 +75,8 @@ public:
 signals:
 	void dispatchCustomSettings(RichParameterSet& rps);
 	void filterExecuted();
-	void updateLayerTable();
+    void updateLayerTable();
+    void showInDual (MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName = QString());
 
 private slots:
   GLArea* newProject(const QString& projName = QString());
@@ -87,6 +88,7 @@ public slots:
   bool openProject(QString fileName=QString());
   bool appendProject(QString fileName=QString());
   void updateCustomSettings();
+  GLArea* newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName = QString());
 
 
   void delCurrentMesh();
@@ -505,10 +507,9 @@ public:
 	QMenu* dualLayerMenu() { return MenuDualLayer; }
     QAction  *showDualMeshAct;
 
-	GLArea* newProjectDualMesh(MeshModel* m1, MeshModel* m2, const QString& projName = QString());
-	void cloneMesh(CMeshO& cm, CMeshO& mesh );
+    void cloneMesh(CMeshO& cm, CMeshO& mesh );
 private slots:
-	GLArea* newDualMeshWindow(const QString& projName = QString());
+    GLArea* newDualMeshWindow(const QString& projName = QString());
 	
 };
 

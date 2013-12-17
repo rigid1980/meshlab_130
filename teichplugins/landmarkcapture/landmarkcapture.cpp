@@ -143,57 +143,6 @@ void LandmarkCapturePlugin::Decorate(MeshModel &m, GLArea * gla, QPainter *p)
 				//        CMeshO::VertexPointer  vp = vertics[idx];
 				Log("Nearest point %d: %d",ret,m.cm.selVertVector.size());
 			}
-
-//		for(int i=0;i<3;i++)
-//		{
-//	        Point3<float>*  pp = &curFacePtr->P(i);
-//			Log("P cord: %f %f %f",pp->X(),pp->Y(),pp->Z());
-//				pp = &curFacePtr->cP(i);
-//            Log("cP cord: %f %f %f",pp->X(),pp->Y(),pp->Z());
-//		}
-
-//    glPushMatrix();
-//    glMultMatrix(m.cm.Tr);
-//    glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_LINE_BIT | GL_DEPTH_BUFFER_BIT);
-//    glLineWidth(2.0f);
-//    glDepthFunc(GL_ALWAYS);
-//    glDisable(GL_DEPTH_TEST);
-//    glDepthMask(GL_FALSE);
-
-//    glDisable(GL_LIGHTING);
-//    glColor(Color4b::DarkRed);
-//  glBegin(GL_POINTS);
-//  //glBegin(GL_QUADS);
-//    glVertex(curFacePtr->P(0));
-//    glVertex(curFacePtr->P(1));
-//    glVertex(curFacePtr->P(2));
-
-//    glBegin(GL_QUADS);
-//        glColor3f(1,0,0); //red
-//        glVertex3f(1, 0, 0.0);
-//        glColor3f(0,1,0); //green
-//        glVertex3f(0, 1, 0.0);
-//        glColor3f(0,0,1); //blue
-//        glVertex3f(0.5, 0.5, 0.0);
-//        glColor3f(1,1,1); //white
-//        glVertex3f(0.5, 0, 0.0);
-
- // glEnd();
-
-//    glDepthMask(GL_TRUE);
-//    glEnable(GL_DEPTH_TEST);
-//    glDepthFunc(GL_LESS);
-//    glColor(Color4b::Red);
-//  glBegin(GL_LINE_LOOP);
-//    glVertex(curFacePtr->P(0));
-//    glVertex(curFacePtr->P(1));
-//    glVertex(curFacePtr->P(2));
-//  glEnd();
-
-//  drawFace(curFacePtr,m,gla,p);
-
- // glPopAttrib();
- //   glPopMatrix();
  }
 }
 

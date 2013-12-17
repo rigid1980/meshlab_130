@@ -1,5 +1,4 @@
-/****************************************************************************
-* MeshLab                                                           o o     *
+/* MeshLab                                                           o o     *
 * An extendible mesh processor                                    o     o   *
 *                                                                _   O  _   *
 * Copyright(C) 2005, 2006                                          \/)\/    *
@@ -461,7 +460,7 @@ void MainWindow::createActions()
 	connect(showFilterEditAct, SIGNAL(triggered()), this, SLOT(showXMLPluginEditorGui()));
 	
 	showDualMeshAct = new QAction(tr("&Show in Dual Mesh Window"), this);
-	connect(showDualMeshAct, SIGNAL(triggered()), this, SLOT(newDualMeshWindow()));
+    connect(showDualMeshAct, SIGNAL(triggered()), this, SLOT(newDualMeshWindow()));    
 
 }
 

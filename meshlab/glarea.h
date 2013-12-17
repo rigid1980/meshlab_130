@@ -62,7 +62,7 @@ public:
 	~GLArea();
 	static void initGlobalParameterSet( RichParameterSet * /*globalparam*/);
 
-private:
+protected:
   int id;  //the very important unique id of each subwindow.
   MultiViewer_Container* parentmultiview;
 
@@ -190,7 +190,6 @@ signals:
 	void glareaClosed();					//someone has closed the glarea
   
 	void currentViewerChanged(int currentId);
-
 public slots:
 
 	// Called when we change layer, notifies the edit tool if one is open
@@ -252,6 +251,8 @@ public:
 	vcg::Point3f getViewDir(); 
 	bool	infoAreaVisible;		// Draws the lower info area ?
 	bool  suspendedEditor;
+	
+//only one protected
 protected:
 
 	void initializeGL();
@@ -278,7 +279,7 @@ protected:
 	bool drawSelection;
 	void hideEvent(QHideEvent * event);
 
-private:
+protected:
 	QMap<QString,QCursor> curMap;
 	void pasteTile();
 	void setTiledView(GLdouble fovY, float viewRatio, float fAspect, GLdouble zNear, GLdouble zFar, float cameraDist);
@@ -336,11 +337,11 @@ public slots:
 	void updateMeshSetVisibilities();
 	void updateRasterSetVisibilities();
 
-private slots:
+protected slots:
 	void addNewEntryInRenderModeMap(int index);
 	void removeEntryFromRenderModeMap(int index);
 
-private:
+protected:
 	float cfps;
 	float lastTime;
 	
@@ -354,7 +355,7 @@ private:
 	void setCursorTrack(vcg::TrackMode *tm);
 
 	//-----------Raster support----------------------------
-private:
+protected:
 	bool _isRaster; // true if the viewer is a RasterViewer, false if is a MeshViewer; default value is false.
 
 	int zoomx, zoomy;
@@ -370,7 +371,7 @@ public:
 
 	void setTarget(QImage &image);
 
-private:
+protected:
 	void drawTarget();
 
 	//-----------Shot support----------------------------
@@ -384,7 +385,7 @@ public:
 	void viewFromClipboard();
   void loadShot(const QPair<vcg::Shotf, float> &) ;
 
-private:
+protected:
 
 	float getCameraDistance();
   void initializeShot(vcg::Shotf &shot);

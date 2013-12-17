@@ -30,6 +30,8 @@
 
 #include <meshlab/mainwindow.h>
 
+#include <QFileInfo>
+
 
 using namespace std;
 using namespace vcg;
@@ -91,6 +93,22 @@ int LandmarkSerializePlugin::getRequirements(QAction */*action*/)
 
 void LandmarkSerializePlugin::initParameterSet(QAction *action, MeshModel &m, RichParameterSet &parlst)
 {
+
+    QString fileName = m.fullName();
+	
+	QFile file(fileName);
+    if (fileName.isEmpty() || !file.exists()) {
+	  QMessageBox::warning(new QWidget(),"Error","You must import/save mesh file first!!");
+      return ;
+	} else {
+	  // your method
+	  QFileInfo const fileinfo(fileName);
+      QString extension = QString("lmk");
+      landmarkFilePath = fileinfo.absoluteFilePath () ;
+      landmarkFileName = fileinfo./*completeBaseName()*/fileName().append(".").append(extension);
+	}
+	
+	
 	switch(ID(action))
 	{
         case FP_LANDMARK_SERIALIZE_IMPORT:
@@ -107,7 +125,7 @@ void LandmarkSerializePlugin::initParameterSet(QAction *action, MeshModel &m, Ri
 			parlst.addParam(new RichBool("useVBO",AMBOCC_USEVBO_BY_DEFAULT,"Use VBO if supported","By using VBO, Meshlab loads all the vertex structure in the VRam, greatly increasing rendering speed (for both CPU and GPU mode). Disable it if problem occurs"));
 			parlst.addParam(new RichInt ("depthTexSize",AMBOCC_DEFAULT_TEXTURE_SIZE,"Depth texture size(should be 2^n)", "Defines the depth texture size used to compute occlusion from each point of view. Higher values means better accuracy usually with low impact on performance"));
 			*/
-            
+            parlst.addParam(new RichString ("landmarkfilename",landmarkFileName,"landmark file name"));
 			break;
   default: break; // do not add any parameter for the other algos
   }
@@ -116,11 +134,13 @@ bool LandmarkSerializePlugin::applyFilter(QAction *action, MeshDocument &md,
                              RichParameterSet & par, vcg::CallBackPos *cb)
 {
 	MeshModel* mod  = md.mm();
+	/*
 	QString fileName = mod->fullName();
 	QString extension = QString("lmk");
 	QString lmkfileName = fileName.append(".").append(extension);
-
-	QFile mFile(lmkfileName);
+	*/
+	landmarkFileName =par.getString("landmarkfilename");
+	QFile mFile(landmarkFileName);
 
 	switch(ID(action))
 	{
