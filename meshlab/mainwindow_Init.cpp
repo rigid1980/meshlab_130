@@ -161,8 +161,8 @@ void MainWindow::createActions()
 	closeProjectAct = new QAction(tr("Close Project"), this);
 	//closeProjectAct->setShortcutContext(Qt::ApplicationShortcut);
 	//closeAct->setShortcut(Qt::CTRL+Qt::Key_C);
-	connect(closeProjectAct, SIGNAL(triggered()),mdiarea, SLOT(closeActiveSubWindow()));
-	//connect(closeProjectAct, SIGNAL(triggered()),this, SLOT(closeProjectWindow()));
+    //connect(closeProjectAct, SIGNAL(triggered()),mdiarea, SLOT(closeActiveSubWindow()));
+    //connect(closeProjectAct, SIGNAL(triggered()),this, SLOT(closeProjectWindow()));
 	importMeshAct = new QAction(QIcon(":/images/import_mesh.png"),tr("&Import Mesh..."), this);
 	importMeshAct->setShortcutContext(Qt::ApplicationShortcut);
 	importMeshAct->setShortcut(Qt::CTRL+Qt::Key_I);

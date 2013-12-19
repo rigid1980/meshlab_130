@@ -47,6 +47,8 @@
 #include <QMdiSubWindow>
 
 #define MAXRECENTFILES 4
+// mengbin
+#define __DISABLE_AUTO_STATS__ 1
 
 class QAction;
 class QActionGroup;
@@ -76,7 +78,7 @@ signals:
 	void dispatchCustomSettings(RichParameterSet& rps);
 	void filterExecuted();
     void updateLayerTable();
-    void showInDual (MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName = QString());
+    void showInDual (MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName);
 
 private slots:
   GLArea* newProject(const QString& projName = QString());
@@ -508,8 +510,14 @@ public:
     QAction  *showDualMeshAct;
 
     void cloneMesh(CMeshO& cm, CMeshO& mesh );
+    void newProjectDualMesh2(MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName = QString())
+	{
+        qDebug()<<"emit showInDual(m1,ind1, m2, ind2, projName);";
+        emit showInDual(m1,ind1, m2, ind2, projName);
+	}
 private slots:
     GLArea* newDualMeshWindow(const QString& projName = QString());
+	
 	
 };
 

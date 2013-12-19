@@ -51,7 +51,7 @@ QString DualWidgetPlugin::filterName(FilterIDType algoId) const
 {
 	switch(algoId)
 	{
-    case FP_DUAL_WIDGET :  return QString("Dual Mesh Widget");
+    case FP_DUAL_WIDGET :  return QString("Show in Dual Widget");
     	default : assert(0); 
 	}
 	
@@ -109,10 +109,10 @@ void DualWidgetPlugin::initParameterSet(QAction *action, MeshModel &m, RichParam
                 }
                 int li = (md->meshList.size()>=1)?0:-1;
                 int ri = (md->meshList.size()>=2)?1:-1;
-                parlst.addParam(new RichEnum("leftmesh", li, curvNameList, tr("Left Mesh:"),
+                parlst.addParam(new RichEnum("leftmesh", li, curvNameList, tr("Mesh in Left:"),
                                 QString("Choose mesh for left window")));
 
-                parlst.addParam(new RichEnum("rightmesh", ri, curvNameList, tr("Right Mesh:"),
+                parlst.addParam(new RichEnum("rightmesh", ri, curvNameList, tr("Mesh in Right:"),
                                 QString("Choose mesh for right window")));
 
             }
@@ -141,13 +141,13 @@ bool DualWidgetPlugin::applyFilter(QAction *algo, MeshDocument &md,
     MeshModel* m1 = NULL;
     MeshModel* m2 = NULL;
 
-    if(md.meshList.size() >leftInd)
+    if(md.meshList.size() >leftInd && leftInd > -1)
     {
           m1 = md.meshList[leftInd];
     }else{
 		leftInd=-1;
 	}
-    if(md.meshList.size() >rightInd)
+    if(md.meshList.size() >rightInd && rightInd > -1)
     {
           m2 = md.meshList[rightInd];
     }else{
@@ -156,6 +156,7 @@ bool DualWidgetPlugin::applyFilter(QAction *algo, MeshDocument &md,
 
    //md.emit showInDual(m1,leftInd, m2, rightInd, QString("Dual Mesh Project Window"));
    // mainwindow->updateCustomSettings();
+   // mainwindow->newProjectDualMesh2(m1,leftInd, m2, rightInd, QString("Dual Mesh Project Window"));
     md.newProjectDualMesh(m1,leftInd, m2, rightInd, QString("Dual Mesh Project Window"));
 
     return true;

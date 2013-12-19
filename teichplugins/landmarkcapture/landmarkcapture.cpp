@@ -142,6 +142,7 @@ void LandmarkCapturePlugin::Decorate(MeshModel &m, GLArea * gla, QPainter *p)
 			    m.cm.selVertVector.push_back(ret);
 				//        CMeshO::VertexPointer  vp = vertics[idx];
 				Log("Nearest point %d: %d",ret,m.cm.selVertVector.size());
+				//gla->repaint();
 			}
  }
 }
@@ -386,6 +387,16 @@ bool LandmarkCapturePlugin::StartEdit(MeshModel &m, GLArea *gla )
   curFacePtr=0;
   curVertPtr=0;
     gla->setCursor(Qt::PointingHandCursor);
+	
+	/*
+	MeshDocument *md = m.parent;
+	QStringList curvNameList = QStringList();
+	for(int ii = 0; ii < md->meshList.size();++ii)
+	{
+		 curvNameList.push_back(md->meshList[ii]->shortName());
+	}
+	*/			
+    Log("start on mesh : %s",m.shortName());
 
     m.cm.selVertVector.clear();
     m.cm.selFaceVector.clear();
@@ -395,7 +406,7 @@ bool LandmarkCapturePlugin::StartEdit(MeshModel &m, GLArea *gla )
 
 void LandmarkCapturePlugin::EndEdit(MeshModel &m, GLArea *gla )
 {
-    Log("LandmarkCapturePlugin::EndEdit");
+    Log("end on mesh : %s",m.shortName());
     //gla->md()->updateMeshSelected();
    //m.updateMeshSelected();
      Log("selVertVector size: %d",m.cm.selVertVector.size());

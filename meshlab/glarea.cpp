@@ -106,9 +106,9 @@ GLArea::GLArea(MultiViewer_Container *mvcont, RichParameterSet *current)
 		connect(this,SIGNAL(updateMainWindowMenus()),mainwindow,SLOT(updateMenus()));
 		connect(mainwindow,SIGNAL(dispatchCustomSettings(RichParameterSet&)),this,SLOT(updateCustomSettingValues(RichParameterSet&)));
         //mengbin
-        connect(md(), SIGNAL(showInDual(MeshModel* m1, int ind1, MeshModel* m2,
-                int ind2, const QString& projName = QString())),mainwindow, SLOT(newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2,
-                int ind2, const QString& projName = QString())));
+        connect(md(), SIGNAL(showInDual(MeshModel*, int, MeshModel* ,
+                int, const QString&)),mainwindow, SLOT(newProjectDualMesh(MeshModel* , int , MeshModel* ,
+                int , const QString& )));
     }else{
 		qDebug("The parent of the GLArea parent is not a pointer to the meshlab MainWindow.");
 	}
@@ -499,27 +499,27 @@ void GLArea::paintEvent(QPaintEvent */*event*/)
                     if(vp != NULL){
                         int ps = 20<(sens/2)?20:sens/2;
                         glPointSize(ps);
-                        //glPointSize(sens/2);
-						glEnable( GL_POINT_SMOOTH );
+                        glEnable( GL_POINT_SMOOTH );
 						
                         glDisable(GL_DEPTH_TEST);
                         glDisable(GL_LIGHTING);
                         glDisable(GL_TEXTURE_2D);
                         glPushMatrix();
-                        glBegin (GL_POINTS); 
+                        glBegin (GL_POINTS);
 
                         //glNormal3f (0.0, 0.0, 1.0);
-                        //glColor4f(1, 1, 0, 255);
-                        glColor3f(1.0,0.0,0.0);
+                        glColor4f(1, 0, 0, .3f);
+                       //glColor3f(1.0,0.0,0.0);
                         glVertex(vp->P());
 
                         glEnd();
                         glPopMatrix();
-						glDisable(GL_POINT_SMOOTH);
+                        glDisable(GL_POINT_SMOOTH);
 						
 
                         int i = tri::Index(mp->cm,vp);
-                        QString buf =QString("\nlm%1 v%2:(%3 %4 %5)").arg(j).arg(i).arg(vp->P()[0]).arg(vp->P()[1]).arg(vp->P()[2]);
+                        //QString buf =QString("\nlm%1 v%2:(%3 %4 %5)").arg(j).arg(i).arg(vp->P()[0]).arg(vp->P()[1]).arg(vp->P()[2]);
+                        QString buf =QString("\nlm%1").arg(j);
                         vcg::glLabel::render(&painter,vp->P(),buf);
                     }
                 }

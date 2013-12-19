@@ -2930,14 +2930,29 @@ void MainWindow::cloneMesh(CMeshO& cm, CMeshO& mesh )
 GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName)
 {
     qDebug()<<"MainWindow::newProjectDualMesh...";
+	// MultiViewer_Container *mvcont = currentViewContainer();
+
     MultiViewer_Container *mvcont = new MultiViewer_Container(mdiarea);
     mdiarea->addSubWindow(mvcont);
       connect(mvcont,SIGNAL(updateMainWindowMenus()),this,SLOT(updateMenus()));
       filterMenu->setEnabled(!filterMenu->actions().isEmpty());
       if (!filterMenu->actions().isEmpty())
           updateSubFiltersMenu(true,false);
-
-      GLLMArea *gla_left=new GLLMArea(mvcont, &currentGlobalParams);
+	
+		  
+		   if (projName.isEmpty())
+          {
+              static int docCounter = 1;
+              mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
+              ++docCounter;
+          }
+          else
+              mvcont->meshDoc.setDocLabel(projName);
+          mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
+		
+		
+      //GLLMArea *gla_left=new GLLMArea(mvcont, &currentGlobalParams);
+	  GLArea *gla_left=new GLArea(mvcont, &currentGlobalParams);
       if (gla_left != NULL)
       {
 			/*
@@ -2950,32 +2965,26 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 		  */
 		  if(m1 != NULL){
 			gla_left->md()->addExistingMesh(m1,true);
-			gla_left->setModelInd(ind1);
+			//gla_left->setModelInd(ind1);
 		  }
-              
-
-          mvcont->addView(gla_left, Qt::Horizontal);
+		
+		 mvcont->addView(gla_left, Qt::Horizontal);
 		  gla_left->setDrawMode(vcg::GLW::DMWire);
-		  gla_left->update(); //now there is the container
-          if (projName.isEmpty())
-          {
-              static int docCounter = 1;
-              mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
-              ++docCounter;
-          }
-          else
-              mvcont->meshDoc.setDocLabel(projName);
-          mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
-          //if(mdiarea->isVisible())
-          if (gla_left->mvc() == NULL)
+		   if (gla_left->mvc() == NULL)
               return NULL;
           gla_left->mvc()->showMaximized();
-          layerDialog->updateTable();
-          layerDialog->updateDecoratorParsView();
+         if(GLA()->isRaster()){
+			gla_left->setIsRaster(true);
+			if(this->meshDoc()->rm()->id()>=0)
+				gla_left->loadRaster(this->meshDoc()->rm()->id());
+		}
+		  gla_left->resetTrackBall();
+		  gla_left->update(); //now there is the container
       }
 
 
-     GLLMArea *gla_right=new GLLMArea(mvcont, &currentGlobalParams);
+     //GLLMArea *gla_right=new GLLMArea(mvcont, &currentGlobalParams);
+	 GLArea *gla_right=new GLArea(mvcont, &currentGlobalParams);
 	 
       if (gla_right != NULL)
       {
@@ -2989,12 +2998,22 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 		*/
 		 if(m2 != NULL){
 			gla_right->md()->addExistingMesh(m2,true);
-			gla_right->setModelInd(ind2);
+			//gla_right->setModelInd(ind2);
 		 }
               
 		  mvcont->addView(gla_right, Qt::Horizontal);
           gla_right->setDrawMode(vcg::GLW::DMWire);
+		   if (gla_right->mvc() == NULL)
+              return NULL;
+          gla_right->mvc()->showMaximized();
+         if(GLA()->isRaster()){
+			gla_right->setIsRaster(true);
+			if(this->meshDoc()->rm()->id()>=0)
+				gla_right->loadRaster(this->meshDoc()->rm()->id());
+		}
+		  gla_right->resetTrackBall();
           gla_right->update(); //now there is the container
+		  
 //          if (projName.isEmpty())
 //          {
 //              static int docCounter = 1;
@@ -3012,10 +3031,12 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 //          layerDialog->updateDecoratorParsView();
       }
 
-
+		 layerDialog->updateTable();
+		  layerDialog->updateDecoratorParsView();
+		
 		mvcont->updateAllViewer();
 
-    return gla_left;
+    return NULL;
 }
 
 GLArea* MainWindow::newDualMeshWindow(const QString& projName)

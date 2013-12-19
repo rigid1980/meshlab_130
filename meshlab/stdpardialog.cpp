@@ -291,6 +291,21 @@ void MeshlabStdDialog::applyClick()
 	if(this->curgla) 
 		this->curgla->update();
 
+
+    //mengbin.   close after apply
+	if(curmfi->getClass(curAction) & MeshFilterInterface::Landmark ||
+		curmfi->getClass(curAction) & MeshFilterInterface::Algorithm)
+	{
+		this->closeClick();
+        curModel->meshModified() = false;
+//        int ii = 0;
+//        while(ii < meshList.size())
+//        {
+//            meshList[ii]->meshModified() = false;
+//            ++ii;
+//        }
+	}
+
 }
 
 void MeshlabStdDialog::applyDynamic()

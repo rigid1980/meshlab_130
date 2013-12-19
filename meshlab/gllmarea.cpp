@@ -57,6 +57,15 @@ GLLMArea::~GLLMArea()
 	rendermodemap.clear();
 }
 
+void GLLMArea::mousePressEvent(QMouseEvent*e)
+{
+    GLArea::mousePressEvent(e);
+	qDebug()<<"----------GLLMArea::mousePressEvent(QMouseEvent*e)";
+/*
+	if(meshind>-1 && meshind<this->md()->meshList.size())
+		this->md()->setCurrentMesh(meshind);
+*/
+}
 
 void GLLMArea::paintEvent(QPaintEvent */*event*/)
 {
@@ -190,8 +199,8 @@ void GLLMArea::paintEvent(QPaintEvent */*event*/)
                         glBegin (GL_POINTS); 
 
                         //glNormal3f (0.0, 0.0, 1.0);
-                        //glColor4f(1, 1, 0, 255);
-                        glColor3f(1.0,0.0,0.0);
+                        glColor4f(1, 0, 0, .3f);
+                        //glColor3f(1.0,0.0,0.0);
                         glVertex(vp->P());
 
                         glEnd();
@@ -200,7 +209,8 @@ void GLLMArea::paintEvent(QPaintEvent */*event*/)
 						
 
                         int i = tri::Index(mp->cm,vp);
-                        QString buf =QString("\nlm%1 v%2:(%3 %4 %5)").arg(j).arg(i).arg(vp->P()[0]).arg(vp->P()[1]).arg(vp->P()[2]);
+                        //QString buf =QString("\nlm%1 v%2:(%3 %4 %5)").arg(j).arg(i).arg(vp->P()[0]).arg(vp->P()[1]).arg(vp->P()[2]);
+						QString buf =QString("\nlm%1").arg(j);
                         vcg::glLabel::render(&painter,vp->P(),buf);
                     }
                 }

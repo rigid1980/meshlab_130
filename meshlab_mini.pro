@@ -18,6 +18,7 @@ teichplugins/landmarkcapture        \
 teichplugins/algo_demo              \
 teichplugins/landmark_serialize     \
 teichplugins/dual_widget     \
+sampleplugins/sampleedit    \
 
 #	    meshlabplugins/io_expe \
 #	    meshlabplugins/io_collada \
