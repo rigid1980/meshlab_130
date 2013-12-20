@@ -27,6 +27,7 @@
 #include <vcg/math/gen_normal.h>
 #include <wrap/qt/checkGLError.h>
 #include <iostream>
+#include <meshlab/mainwindow.h>
 
 
 using namespace std;
@@ -139,10 +140,34 @@ void AlgoDemoPlugin::initParameterSet(QAction *action, MeshModel &m, RichParamet
 bool AlgoDemoPlugin::applyFilter(QAction *algo, MeshDocument &md,
                              RichParameterSet & par, vcg::CallBackPos *cb)
 {
+
    MeshModel* pm  = md.mm();
    if(pm == NULL) return false;
-    MeshModel* prm = md.addNewMesh("","resultant mesh",true);
+   
+   /*
+   MainWindow* mainwindow;
+    foreach (QWidget *widget, QApplication::topLevelWidgets())
+    {
+        MainWindow* mainwindow = dynamic_cast<MainWindow*>(widget);
+        if (mainwindow)
+        {
+            break;
+        }
+    }
+	if (mainwindow == NULL)
+        {
+            return false;
+        }
+		
+    MeshModel* prm = mainwindow->newProjectAddMesh("resultant mesh","resultant mesh");
+		
 
+    GLArea* newGLA = mainwindow->newProject("resultant mesh");
+
+    MeshModel* prm = newGLA->md()->addNewMesh("","resultant mesh",true);
+	*/
+
+   MeshModel* prm = md.addNewMesh("","resultant mesh",true);
 
     pm->cm.vert;         //vertics
     pm->cm.face;            //faces

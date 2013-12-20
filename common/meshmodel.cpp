@@ -38,7 +38,10 @@ using namespace vcg;
 MeshDocument::~MeshDocument()
 {
   foreach(MeshModel *mmp, meshList)
-    delete mmp;
+    {
+		if(mmp->refCount > 0) mmp->refCount--;
+		else delete mmp;
+	}
   foreach(RasterModel* rmp,rasterList)
 	  delete rmp;
 }
@@ -360,6 +363,7 @@ MeshModel::MeshModel(MeshDocument *_parent, QString fullFileName, QString labelN
   _id=parent->newMeshId();
   if(!fullFileName.isEmpty())   this->fullPathFileName=fullFileName;
   if(!labelName.isEmpty())     this->_label=labelName;
+  refCount = 0;
 }
 
 QString MeshModel::relativePathName() const

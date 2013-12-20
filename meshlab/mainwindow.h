@@ -515,6 +515,7 @@ public:
         qDebug()<<"emit showInDual(m1,ind1, m2, ind2, projName);";
         emit showInDual(m1,ind1, m2, ind2, projName);
 	}
+    MeshModel* newProjectAddMesh(const QString& projName = QString(), const QString& meshName = QString());
 private slots:
     GLArea* newDualMeshWindow(const QString& projName = QString());
 	

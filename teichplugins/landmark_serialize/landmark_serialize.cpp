@@ -133,6 +133,16 @@ void LandmarkSerializePlugin::initParameterSet(QAction *action, MeshModel &m, Ri
 bool LandmarkSerializePlugin::applyFilter(QAction *action, MeshDocument &md,
                              RichParameterSet & par, vcg::CallBackPos *cb)
 {
+    MainWindow* mainwindow;
+    foreach (QWidget *widget, QApplication::topLevelWidgets())
+    {
+        MainWindow* mainwindow = dynamic_cast<MainWindow*>(widget);
+        if (mainwindow)
+        {
+            break;
+        }
+    }
+
 	MeshModel* mod  = md.mm();
 	/*
 	QString fileName = mod->fullName();
@@ -140,6 +150,12 @@ bool LandmarkSerializePlugin::applyFilter(QAction *action, MeshDocument &md,
 	QString lmkfileName = fileName.append(".").append(extension);
 	*/
 	landmarkFileName =par.getString("landmarkfilename");
+    if(landmarkFileName.isEmpty()){
+        QMessageBox::critical(mainwindow, tr("Meshlab Opening Error"), QString("Filename is empty!"));
+		return false;
+	}
+    landmarkFileName = mod->pathName().append("/").append(landmarkFileName);
+	qWarning()<<"landmarkFileName:"<<landmarkFileName;
 	QFile mFile(landmarkFileName);
 
 	switch(ID(action))
@@ -147,7 +163,10 @@ bool LandmarkSerializePlugin::applyFilter(QAction *action, MeshDocument &md,
 	case FP_LANDMARK_SERIALIZE_IMPORT:
 	{
 		if(!mFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+            QMessageBox::critical(mainwindow, tr("Meshlab Opening Error"), QString("File does not exist or is unable to open!"));
 			return false;
+		}
 
 		mod->cm.selVertVector.clear();
 		QTextStream in(&mFile);
@@ -166,7 +185,10 @@ bool LandmarkSerializePlugin::applyFilter(QAction *action, MeshDocument &md,
 	case FP_LANDMARK_SERIALIZE_EXPORT:
 	{
 		if (!mFile.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+            QMessageBox::critical(mainwindow, tr("Meshlab Opening Error"), QString("File is unable to open for writing!"));
 			return false;
+		}
 
 		QTextStream stream(&mFile);
 

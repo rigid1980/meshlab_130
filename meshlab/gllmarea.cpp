@@ -127,6 +127,7 @@ void GLLMArea::paintEvent(QPaintEvent */*event*/)
 		{
 		  if(hasToSelect) // right mouse click you have to select a mesh
 		  {
+              /*
 			int newId=RenderForSelection(pointToPick[0],pointToPick[1]);
 			if(newId>=0)
 			{
@@ -134,6 +135,9 @@ void GLLMArea::paintEvent(QPaintEvent */*event*/)
 			  md()->setCurrentMesh(newId);
 			  update();
 			}
+            */
+              if(meshind>-1 && meshind<this->md()->meshList.size())
+                  md()->setCurrentMesh(meshind);
 			hasToSelect=false;
 		  }
 		  //else

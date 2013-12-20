@@ -295,7 +295,7 @@ public:
 	bool& meshModified();
 	static int io2mm(int single_iobit);
 
-
+	int refCount;
 };// end class MeshModel
 
 /*

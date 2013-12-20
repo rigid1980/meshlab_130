@@ -388,14 +388,14 @@ bool LandmarkCapturePlugin::StartEdit(MeshModel &m, GLArea *gla )
   curVertPtr=0;
     gla->setCursor(Qt::PointingHandCursor);
 	
-	/*
+	Log("point: %d %d",cur.x(),gla->height() - cur.y());
+	
 	MeshDocument *md = m.parent;
-	QStringList curvNameList = QStringList();
 	for(int ii = 0; ii < md->meshList.size();++ii)
 	{
-		 curvNameList.push_back(md->meshList[ii]->shortName());
+		 MeshModel* mm = md->meshList[ii];
 	}
-	*/			
+	//md->setCurrentMesh(1);			
     Log("start on mesh : %s",m.shortName());
 
     m.cm.selVertVector.clear();

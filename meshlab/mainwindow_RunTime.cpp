@@ -2951,23 +2951,26 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
           mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
 		
 		
-      //GLLMArea *gla_left=new GLLMArea(mvcont, &currentGlobalParams);
-	  GLArea *gla_left=new GLArea(mvcont, &currentGlobalParams);
+      GLLMArea *gla_left=new GLLMArea(mvcont, &currentGlobalParams);
+	  //GLArea *gla_left=new GLArea(mvcont, &currentGlobalParams);
       if (gla_left != NULL)
       {
 			/*
-		          MeshModel* prm = gla_left->md()->addNewMesh("","Mesh Left",true);
 		          if(m1 != NULL)
 		          {
-		              cloneMesh(prm->cm,m1->cm);
+					MeshModel* prm = gla_left->md()->addNewMesh("","Mesh Left",true);
+		            cloneMesh(prm->cm,m1->cm);
 					  gla_left->setModelInd(0);
 		          }
-		  */
+			*/
+	
 		  if(m1 != NULL){
 			gla_left->md()->addExistingMesh(m1,true);
-			//gla_left->setModelInd(ind1);
+            //qDebug()<<"refCount 1"<<m1->refCount;
+			m1->refCount++;
+            gla_left->setModelInd(ind1);
 		  }
-		
+
 		 mvcont->addView(gla_left, Qt::Horizontal);
 		  gla_left->setDrawMode(vcg::GLW::DMWire);
 		   if (gla_left->mvc() == NULL)
@@ -2982,27 +2985,27 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 		  gla_left->update(); //now there is the container
       }
 
-
-     //GLLMArea *gla_right=new GLLMArea(mvcont, &currentGlobalParams);
-	 GLArea *gla_right=new GLArea(mvcont, &currentGlobalParams);
-	 
+		GLLMArea *gla_right=new GLLMArea(mvcont, &currentGlobalParams);
+	  //GLArea *gla_right=new GLArea(mvcont, &currentGlobalParams);
       if (gla_right != NULL)
       {
-			/*
-		  MeshModel* prm = gla_right->md()->addNewMesh("","Mesh Right",true);
-	          if(m2 != NULL)
-	          {           
-	              cloneMesh(prm->cm,m2->cm);
-				  gla_right->setModelInd(1);
-	          }
-		*/
-		 if(m2 != NULL){
+		  /*	
+		  if(m1 != NULL)
+		  {
+			MeshModel* prm = gla_right->md()->addNewMesh("","Mesh Rigth",true);	  
+			  cloneMesh(prm->cm,m1->cm);
+			  gla_right->setModelInd(1);
+		  } */
+		  
+		  if(m2 != NULL){
 			gla_right->md()->addExistingMesh(m2,true);
-			//gla_right->setModelInd(ind2);
-		 }
-              
-		  mvcont->addView(gla_right, Qt::Horizontal);
-          gla_right->setDrawMode(vcg::GLW::DMWire);
+            //qDebug()<<"refCount 2"<<m2->refCount;
+			m2->refCount++;
+            gla_right->setModelInd(ind2);
+		  }
+		
+		 mvcont->addView(gla_right, Qt::Horizontal);
+		  gla_right->setDrawMode(vcg::GLW::DMWire);
 		   if (gla_right->mvc() == NULL)
               return NULL;
           gla_right->mvc()->showMaximized();
@@ -3012,32 +3015,13 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 				gla_right->loadRaster(this->meshDoc()->rm()->id());
 		}
 		  gla_right->resetTrackBall();
-          gla_right->update(); //now there is the container
-		  
-//          if (projName.isEmpty())
-//          {
-//              static int docCounter = 1;
-//              mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
-//              ++docCounter;
-//          }
-//          else
-//              mvcont->meshDoc.setDocLabel(projName);
-//          mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
-//          //if(mdiarea->isVisible())
-//          if (gla_right->mvc() == NULL)
-//              return NULL;
-//          gla_right->mvc()->showMaximized();
-//          layerDialog->updateTable();
-//          layerDialog->updateDecoratorParsView();
+		  gla_right->update(); //now there is the container
       }
-
-		 layerDialog->updateTable();
-		  layerDialog->updateDecoratorParsView();
-		
-		mvcont->updateAllViewer();
 
     return NULL;
 }
+
+
 
 GLArea* MainWindow::newDualMeshWindow(const QString& projName)
 {
@@ -3060,4 +3044,12 @@ GLArea* MainWindow::newDualMeshWindow(const QString& projName)
     }
 	
     return newProjectDualMesh(m1,ind1, m2, ind2, QString("Dual Mesh Project Window"));
+}
+
+MeshModel* MainWindow::newProjectAddMesh(const QString& projName, const QString& meshName)
+{
+
+    GLArea* newGLA = newProject(projName);
+        MeshModel* prm = newGLA->md()->addNewMesh("",meshName,true);
+        return prm;
 }
