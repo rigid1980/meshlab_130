@@ -1088,6 +1088,8 @@ void MainWindow::executeFilter(QAction *action, RichParameterSet &params, bool i
     bool ret;
   qApp->setOverrideCursor(QCursor(Qt::WaitCursor));
     QTime tt; tt.start();
+    //mengbin
+  if(!(iFilter->getClass(action) & MeshFilterInterface::Algorithm))
   meshDoc()->setBusy(true);
   RichParameterSet MergedEnvironment(params);
   MergedEnvironment.join(currentGlobalParams);
@@ -1100,7 +1102,8 @@ void MainWindow::executeFilter(QAction *action, RichParameterSet &params, bool i
   try
   {
       ret=iFilter->applyFilter(action, *(meshDoc()), MergedEnvironment, QCallBack);
-
+    //mengbin
+  if(!(iFilter->getClass(action) & MeshFilterInterface::Algorithm))
       meshDoc()->setBusy(false);
 
       qApp->restoreOverrideCursor();

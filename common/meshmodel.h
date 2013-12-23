@@ -634,6 +634,7 @@ public:
 		{
 			emit meshDocumentModified();
 		}
+        qDebug()<<this<<" Set Busy "<<_busy;
 		busy=_busy;
 	}
 

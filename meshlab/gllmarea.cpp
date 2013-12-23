@@ -61,10 +61,22 @@ void GLLMArea::mousePressEvent(QMouseEvent*e)
 {
     GLArea::mousePressEvent(e);
 	qDebug()<<"----------GLLMArea::mousePressEvent(QMouseEvent*e)";
-/*
-	if(meshind>-1 && meshind<this->md()->meshList.size())
-		this->md()->setCurrentMesh(meshind);
-*/
+
+    if(meshind>-1 && meshind<this->md()->meshList.size() )
+	{
+        if(md()->getMesh(meshind) != md()->mm())
+        {
+            foreach(MeshModel *mp, this->md()->meshList)
+            {
+                this->meshSetVisibility(mp, false);
+            }
+            this->meshSetVisibility(md()->getMesh(meshind), true);
+            this->md()->setCurrentMesh(meshind);
+            update();
+        }
+
+	}
+		
 }
 
 void GLLMArea::paintEvent(QPaintEvent */*event*/)

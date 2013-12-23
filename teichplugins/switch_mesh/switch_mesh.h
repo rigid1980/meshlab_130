@@ -21,46 +21,57 @@
 *                                                                           *
 ****************************************************************************/
 
-#ifndef SAMPLEEDITPLUGIN_H
-#define SAMPLEEDITPLUGIN_H
+#ifndef AMBIENT_OCCLUSION_H
+#define AMBIENT_OCCLUSION_H
 
 #include <QObject>
+
 #include <common/interfaces.h>
-
-
-class LandmarkCapturePlugin : public QObject, public MeshEditInterface
+#include <common/meshmodel.h>
+#include <wrap/gl/gl_surface.h>
+//class FILTERWidget;
+class SwitchMeshPlugin : public QObject, public MeshFilterInterface
 {
 	Q_OBJECT
-	Q_INTERFACES(MeshEditInterface)
-		
+	MESHLAB_PLUGIN_IID_EXPORTER(MESH_FILTER_INTERFACE_IID)
+	Q_INTERFACES(MeshFilterInterface)
+
+// Attributes
+protected:
+	
 public:
-    LandmarkCapturePlugin();
-    virtual ~LandmarkCapturePlugin() {}
 
-    static const QString Info();
 
-    bool StartEdit(MeshModel &/*m*/, GLArea * /*parent*/);
-    //void EndEdit(MeshModel &/*m*/, GLArea * /*parent*/){};
-    void EndEdit(MeshModel &m, GLArea *gla );
-    void Decorate(MeshModel &/*m*/, GLArea * /*parent*/, QPainter *p);
-    void Decorate (MeshModel &/*m*/, GLArea * ){};
-    void mousePressEvent(QMouseEvent *, MeshModel &, GLArea * ) {};
-    void mouseMoveEvent(QMouseEvent *, MeshModel &, GLArea * ) {};
-    void mouseReleaseEvent(QMouseEvent *event, MeshModel &/*m*/, GLArea * );
-		
-  void drawFace(CMeshO::FacePointer fp,MeshModel &m, GLArea *gla, QPainter *p);
-  void drawPoint(CMeshO::VertexPointer vp, int i, MeshModel &m, GLArea *gla, QPainter *p);
+// Methods
+public:
+	enum { FP_SWITCH_MESH} ;
 
-    QPoint cur;
-	QFont qFont;
-    bool haveToPick;
-    CMeshO::FacePointer curFacePtr;
-    CMeshO::VertexPointer curVertPtr;
+	SwitchMeshPlugin();
+	~SwitchMeshPlugin();
+	
+    virtual QString     filterName      (FilterIDType algoId) const;
+    virtual QString		filterInfo(FilterIDType algoId) const;
 
-    void findNearest(CMeshO::FacePointer fp, int &fp_idx, MeshModel &m, int &mm_idx);
-    int  transform(vcg::Matrix44f& m, int screenX, int screenY);
-	int findScreenNearest(MeshModel &m,int screenX, int screenY);
-	void drawSingleLandmark(MeshModel * mp, int ii, int j, QPainter *p);
+    virtual FilterClass getClass(QAction *);
+    virtual int         getRequirements (QAction *action);
+
+//    virtual FilterClass getClass(QAction *filter)
+//	{
+//		if(ID(filter)==FP_DUAL_ALGO_DEMO) return MeshAlgoInterface::FaceColoring;
+//	   	else return MeshAlgoInterface::VertexColoring;
+//	};
+	
+	virtual       void        initParameterSet(QAction *,
+	                                           MeshModel &/*m*/,
+	                                           RichParameterSet & /*parent*/);
+    virtual       bool        applyFilter     (QAction *filter,
+                                               MeshDocument &md,
+                                               RichParameterSet & /*parent*/,
+	                                           vcg::CallBackPos * cb) ;
+	
+private:
+	bool init;
+
 };
 
 #endif
