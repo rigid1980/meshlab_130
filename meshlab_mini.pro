@@ -14,10 +14,13 @@ SUBDIRS       = common \
 				meshlab \                         # the GUI framework
                meshlabplugins/io_base\           # a few basic file formats (ply, obj, off), without this you cannot open anything
 #			   meshlabplugins/filter_meshing \
-teichplugins/landmarkcapture        \
-teichplugins/algo_demo              \
-teichplugins/landmark_serialize     \
 teichplugins/dual_widget     \
+teichplugins/mesh_grid       \
+teichplugins/landmarkcapture        \
+teichplugins/landmark_serialize     \
+#teichplugins/algo_demo              \
+teichplugins/algo_teich              \
+
 #teichplugins/switch_mesh     \
 #sampleplugins/sampleedit    \
 

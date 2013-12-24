@@ -363,6 +363,7 @@ private:
   QMenu *filterMenuTexture;
   QMenu *filterMenuCamera;
   //mengbin
+  QMenu *filterMenuMesh;
   QMenu *filterMenuLandmark;
   QMenu *filterMenuAlgorithm;
 

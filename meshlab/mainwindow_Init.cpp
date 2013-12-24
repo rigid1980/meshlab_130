@@ -780,6 +780,8 @@ void MainWindow::fillFilterMenu()
     filterMenu->addMenu(filterMenuCamera);
 
     //mengbin
+    filterMenuMesh = new MenuWithToolTip(tr("Mesh"),this);
+    filterMenu->addMenu(filterMenuMesh);
     filterMenuLandmark = new MenuWithToolTip(tr("Landmark"),this);
     filterMenu->addMenu(filterMenuLandmark);
     filterMenuAlgorithm = new MenuWithToolTip(tr("Algorithm"),this);
@@ -889,6 +891,10 @@ void MainWindow::fillFilterMenu()
 			filterMenuCamera->addAction(filterAction);
 		}
         //mengbin
+        if( filterClass & MeshFilterInterface::Mesh)
+        {
+            filterMenuMesh->addAction(filterAction);
+        }
         if( filterClass & MeshFilterInterface::Landmark)
         {
             filterMenuLandmark->addAction(filterAction);

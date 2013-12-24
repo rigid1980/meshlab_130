@@ -243,8 +243,9 @@ public:
         Polygonal        =0x08000,  /*!<  Filters that works on polygonal and quad meshes.*/
         Camera           =0x10000,  /*!<  Filters that works on shot of mesh and raster.*/
         //mengbin
-         Landmark        =0x20000,
-         Algorithm        =0x40000
+         Mesh           =0x20000,
+         Landmark        =0x40000,
+         Algorithm        =0x80000
     };
 	
 	

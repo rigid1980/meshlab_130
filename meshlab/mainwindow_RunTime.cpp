@@ -306,6 +306,8 @@ void MainWindow::updateSubFiltersMenu( const bool createmenuenabled,const bool v
 	updateMenuItems(filterMenuCamera,validmeshdoc);
 
     //mengbin
+    filterMenuMesh->setEnabled(createmenuenabled || validmeshdoc);
+    updateMenuItems(filterMenuMesh,createmenuenabled || validmeshdoc);
     filterMenuLandmark->setEnabled(validmeshdoc);
     updateMenuItems(filterMenuLandmark,validmeshdoc);
 	filterMenuAlgorithm->setEnabled(validmeshdoc);
@@ -1489,7 +1491,7 @@ void MainWindow::postFilterExecution()
 	}
 
     //mengbin
-    if(mask & MeshFilterInterface::Algorithm )
+    if(mask & MeshFilterInterface::Mesh || mask & MeshFilterInterface::Algorithm )
     {
         qDebug()<<"after algorithm executed:set wired";
         GLA()->setDrawMode(vcg::GLW::DMWire);

@@ -73,7 +73,7 @@ DualWidgetPlugin::FilterClass DualWidgetPlugin::getClass(QAction *a)
 {
   switch(ID(a))
   {
-    case FP_DUAL_WIDGET :return MeshFilterInterface::Algorithm;
+    case FP_DUAL_WIDGET :return MeshFilterInterface::Mesh;
     default : assert(0);  
 	}
 }

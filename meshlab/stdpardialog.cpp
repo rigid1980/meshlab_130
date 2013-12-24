@@ -288,16 +288,35 @@ void MeshlabStdDialog::applyClick()
 
 	if(curmask && curModel)
 		meshState.create(curmask, curModel);
+
+    if(curmfi->getClass(curAction) & MeshFilterInterface::Mesh )
+    {
+        /*
+        MainWindow* mainwindow = dynamic_cast<MainWindow*>(this->curmwi);
+        if (mainwindow)
+        {
+           mainwindow->resetTrackBall();
+        }
+        */
+        GLArea* glarea = dynamic_cast<GLArea*>(this->curgla);
+        if (glarea)
+        {
+           glarea->resetTrackBall();
+           glarea->setDrawMode(GLW::DMWire);
+        }
+    }
 	if(this->curgla) 
 		this->curgla->update();
 
 
     //mengbin.   close after apply
-	if(curmfi->getClass(curAction) & MeshFilterInterface::Landmark ||
+    if(curmfi->getClass(curAction) & MeshFilterInterface::Mesh ||
+            curmfi->getClass(curAction) & MeshFilterInterface::Landmark ||
 		curmfi->getClass(curAction) & MeshFilterInterface::Algorithm)
 	{
 		this->closeClick();
-        curModel->meshModified() = false;
+        if(curModel)
+            curModel->meshModified() = false;
 //        int ii = 0;
 //        while(ii < meshList.size())
 //        {
