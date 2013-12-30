@@ -20,6 +20,7 @@ teichplugins/landmarkcapture        \
 teichplugins/landmark_serialize     \
 #teichplugins/algo_demo              \
 teichplugins/algo_teich              \
+teichplugins/map_cons              \
 
 #teichplugins/switch_mesh     \
 #sampleplugins/sampleedit    \

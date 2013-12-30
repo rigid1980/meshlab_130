@@ -91,7 +91,7 @@ public slots:
   bool appendProject(QString fileName=QString());
   void updateCustomSettings();
   GLArea* newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, int ind2, const QString& projName = QString());
-
+  GLArea* newProjectforMesh(MeshModel* m1, int ind, const QString& projName = QString());
 
   void delCurrentMesh();
   void delCurrentRaster();
@@ -518,7 +518,7 @@ public:
 	}
     MeshModel* newProjectAddMesh(const QString& projName = QString(), const QString& meshName = QString());
 private slots:
-    GLArea* newDualMeshWindow(const QString& projName = QString());
+    GLArea* showSelInNewWindow(const QString& projName = QString());
 	
 	
 };

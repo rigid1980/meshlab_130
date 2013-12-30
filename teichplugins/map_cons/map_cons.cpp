@@ -22,7 +22,7 @@
 ****************************************************************************/
 
 #include <GL/glew.h>
-#include "algo_teich.h"
+#include "map_cons.h"
 #include <QGLFramebufferObject>
 #include <vcg/math/gen_normal.h>
 #include <wrap/qt/checkGLError.h>
@@ -33,62 +33,62 @@
 using namespace std;
 using namespace vcg;
 
-AlgoTeichPlugin::AlgoTeichPlugin() 
+MapConsPlugin::MapConsPlugin() 
 { 
 	typeList 
-	<< FP_ALGO_TEICH
-    << FP_ALGO_QC;
+	<< FP_MAP_CONS
+    << FP_ALGO_BHF;
 	
     foreach(FilterIDType tt , types())
         actionList << new QAction(filterName(tt), this);
 
 }
 
-AlgoTeichPlugin::~AlgoTeichPlugin()
+MapConsPlugin::~MapConsPlugin()
 {
 }
 
-QString AlgoTeichPlugin::filterName(FilterIDType algoId) const
+QString MapConsPlugin::filterName(FilterIDType algoId) const
 {
 	switch(algoId)
 	{
-    case FP_ALGO_TEICH :  return QString("Teichmuller Mapping");
-    case FP_ALGO_QC  :  return QString("QC Mapping");
+    case FP_MAP_CONS :  return QString("Map Reconstruction");
+    case FP_ALGO_BHF  :  return QString("Conformal Mapping");
 		default : assert(0); 
 	}
 	
 	return QString("");
 }
 
-QString AlgoTeichPlugin::filterInfo(FilterIDType algoId) const
+QString MapConsPlugin::filterInfo(FilterIDType algoId) const
 {
 	switch(algoId)
 	{
-    case  FP_ALGO_TEICH: return QString("Teichmuller extremal mapping between two surfaces with landmark matching");
-    case FP_ALGO_QC :  return QString("QC mapping for 2 meshes");
+    case  FP_MAP_CONS: return QString("Map Reconstruction with given mu");
+    case FP_ALGO_BHF :  return QString("BHF Conformal Mapping");
 		default : assert(0); 
 	}
 
 	return QString("");
 }
 
-AlgoTeichPlugin::FilterClass AlgoTeichPlugin::getClass(QAction *a)
+MapConsPlugin::FilterClass MapConsPlugin::getClass(QAction *a)
 {
   switch(ID(a))
   {
-    case FP_ALGO_TEICH :return MeshFilterInterface::Algorithm;
-    case FP_ALGO_QC : return MeshFilterInterface::Algorithm;
+    case FP_MAP_CONS :return MeshFilterInterface::Algorithm;
+    case FP_ALGO_BHF : return MeshFilterInterface::Algorithm;
     default : assert(0);  
 	}
 }
 
-int AlgoTeichPlugin::getRequirements(QAction */*action*/)
+int MapConsPlugin::getRequirements(QAction */*action*/)
 {
 	//no requirements needed
 	return 0;
 }
 
-void AlgoTeichPlugin::initParameterSet(QAction *action, MeshModel &m, RichParameterSet &parlst)
+void MapConsPlugin::initParameterSet(QAction *action, MeshModel &m, RichParameterSet &parlst)
 {
 
     MeshDocument *md = m.parent;
@@ -98,7 +98,7 @@ void AlgoTeichPlugin::initParameterSet(QAction *action, MeshModel &m, RichParame
         return;
     }
 
-    curvNameList = QStringList();
+    QStringList curvNameList = QStringList();
     for(int ii = 0; ii < md->meshList.size();++ii)
     {
          curvNameList.push_back(md->meshList[ii]->label());
@@ -107,55 +107,44 @@ void AlgoTeichPlugin::initParameterSet(QAction *action, MeshModel &m, RichParame
     int ri = (md->meshList.size()>=2)?1:-1;
 
 
+	QString fileName = m.fullName();
+	
+	QFile file(fileName);
+    if (fileName.isEmpty() || !file.exists()) {
+        muFilePath = "./";
+        muFileName = "mufile";
+	} else {
+	  // your method
+	  QFileInfo const fileinfo(fileName);
+      QString extension = QString("mu");
+      muFilePath = fileinfo.absoluteFilePath () ;
+      muFileName = fileinfo./*completeBaseName()*/fileName().append(".").append(extension);
+	}
 								
     switch(ID(action))
     {
-        case FP_ALGO_TEICH:
-        case FP_ALGO_QC:
-            parlst.addParam(new RichEnum("sourcemesh", li, curvNameList, tr("Source Mesh:"),
-                    QString("Choose mesh for left window")));
-            parlst.addParam(new RichEnum("targetmesh", ri, curvNameList, tr("Target Mesh:"),
-                    QString("Choose mesh for right window")));
+        case FP_MAP_CONS:
+			parlst.addParam(new RichString ("mufilename",muFileName,"mu file name"));
             break;
-            parlst.addParam(new RichEnum("sourcemesh", li, curvNameList, tr("Source Mesh:"),
-                    QString("Choose mesh for left window")));
+        case FP_ALGO_BHF:
+            parlst.addParam(new RichEnum("conformaltype", li, QStringList()<<"One Hole"<<"Two Hole", tr("Holes:"),
+		QString("Choose mesh for left window")));
             break;
         default: break; // do not add any parameter for the other algos
     }
-	/*
-	parlst.addParam(new RichFloat("",0,"Directional Bias [0..1]","The balance between a uniform and a directionally biased set of lighting direction<br>:"
-									" - 0 means light came only uniformly from any direction<br>"
-									" - 1 means that all the light cames from the specified cone of directions <br>"
-									" - other values mix the two set of lighting directions "));
-	parlst.addParam(new RichInt ("loops",AMBOCC_DEFAULT_NUM_VIEWS,"Requested views", "Number of different views uniformly placed around the mesh. More views means better accuracy at the cost of increased calculation time"));
-	parlst.addParam(new RichPoint3f("coneDir",Point3f(0,1,0),"Lighting Direction", "Number of different views placed around the mesh. More views means better accuracy at the cost of increased calculation time"));
-	parlst.addParam(new RichFloat("coneAngle",30,"Cone amplitude", "Number of different views uniformly placed around the mesh. More views means better accuracy at the cost of increased calculation time"));
-	parlst.addParam(new RichBool("useGPU",AMBOCC_USEGPU_BY_DEFAULT,"Use GPU acceleration","In order to use GPU-Mode, your hardware must support FBOs, FP32 Textures and Shaders. Normally increases the performance by a factor of 4x-5x"));
-	parlst.addParam(new RichBool("useVBO",AMBOCC_USEVBO_BY_DEFAULT,"Use VBO if supported","By using VBO, Meshlab loads all the vertex structure in the VRam, greatly increasing rendering speed (for both CPU and GPU mode). Disable it if problem occurs"));
-	parlst.addParam(new RichInt ("depthTexSize",AMBOCC_DEFAULT_TEXTURE_SIZE,"Depth texture size(should be 2^n)", "Defines the depth texture size used to compute occlusion from each point of view. Higher values means better accuracy usually with low impact on performance"));
-	*/
-	parlst.addParam(new RichBool ("uselandmark",
-				true,
-				"use landmark",
-				"If true, landmark will be used in calculation."));
-			
-    parlst.addParam(new RichFloat ("width",1.0,"target width", "target width"));
-    parlst.addParam(new RichFloat ("height",1.0,"target height", "target height"));
-    parlst.addParam(new RichFloat ("mubound",1.0,"mu bound", "mu bound"));
+	
+	parlst.addParam(new RichEnum("originmesh", li, curvNameList, tr("Original Mesh:"),
+		QString("Choose mesh for left window")));
 	parlst.addParam(new RichInt ("loops",100,"loop times", "loop times"));
 	parlst.addParam(new RichFloat("epsilon",0.01,"epsilon", "epsilon"));
 }
-bool AlgoTeichPlugin::applyFilter(QAction *algo, MeshDocument &md,
-                             RichParameterSet & parlst, vcg::CallBackPos *cb)
+bool MapConsPlugin::applyFilter(QAction *algo, MeshDocument &md,
+                             RichParameterSet & par, vcg::CallBackPos *cb)
 {
 
-	int li = parlst.getEnum("sourcemesh");
-	int ri = parlst.getEnum("sourcemesh");
-    if(li<0 ) return false;
-   MeshModel* pm  = md.meshList[li];
+   MeshModel* pm  = md.mm();
    if(pm == NULL) return false;
    
-   //par.getInt
    /*
    MainWindow* mainwindow;
     foreach (QWidget *widget, QApplication::topLevelWidgets())
@@ -179,12 +168,11 @@ bool AlgoTeichPlugin::applyFilter(QAction *algo, MeshDocument &md,
     MeshModel* prm = newGLA->md()->addNewMesh("","resultant mesh",true);
 	*/
 
-	QString label = pm->label().append("tmap");
    MeshModel* prm = md.addNewMesh("","resultant mesh",true);
 
     pm->cm.vert;         //vertics
     pm->cm.face;            //faces
-    pm->cm.selVertVector;   //landmarks
+    pm->cm.selVertVector;   //mus
 
 
     vcg::tri::Append<CMeshO,CMeshO>::MeshCopy(prm->cm,pm->cm);
@@ -211,4 +199,4 @@ bool AlgoTeichPlugin::applyFilter(QAction *algo, MeshDocument &md,
 }
 	
 
-MESHLAB_PLUGIN_NAME_EXPORTER(AlgoTeichPlugin)
+MESHLAB_PLUGIN_NAME_EXPORTER(MapConsPlugin)

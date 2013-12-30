@@ -21,8 +21,8 @@
 *                                                                           *
 ****************************************************************************/
 
-#ifndef ALGO_TEICH_H
-#define ALGO_TEICH_H
+#ifndef MAP_CONS_H
+#define MAP_CONS_H
 
 #include <QObject>
 
@@ -30,7 +30,7 @@
 #include <common/meshmodel.h>
 #include <wrap/gl/gl_surface.h>
 //class FILTERWidget;
-class AlgoTeichPlugin : public QObject, public MeshFilterInterface
+class MapConsPlugin : public QObject, public MeshFilterInterface
 {
 	Q_OBJECT
 	MESHLAB_PLUGIN_IID_EXPORTER(MESH_FILTER_INTERFACE_IID)
@@ -44,11 +44,11 @@ public:
 
 // Methods
 public:
-	enum { FP_ALGO_TEICH,
-         FP_ALGO_QC } ;
+	enum { FP_MAP_CONS,
+         FP_ALGO_BHF } ;
 
-	AlgoTeichPlugin();
-	~AlgoTeichPlugin();
+	MapConsPlugin();
+	~MapConsPlugin();
 	
     virtual QString     filterName      (FilterIDType algoId) const;
     virtual QString		filterInfo(FilterIDType algoId) const;
@@ -58,7 +58,7 @@ public:
 
 //    virtual FilterClass getClass(QAction *filter)
 //	{
-//		if(ID(filter)==FP_ALGO_QC) return MeshAlgoInterface::FaceColoring;
+//		if(ID(filter)==FP_ALGO_BHF) return MeshAlgoInterface::FaceColoring;
 //	   	else return MeshAlgoInterface::VertexColoring;
 //	};
 	
@@ -72,8 +72,9 @@ public:
 	
 private:
 	bool init;
-    QStringList curvNameList;
 
+	QString muFilePath;
+	QString muFileName;
 };
 
 #endif

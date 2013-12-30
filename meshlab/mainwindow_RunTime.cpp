@@ -1168,6 +1168,27 @@ void MainWindow::executeFilter(QAction *action, RichParameterSet &params, bool i
 				it.value().setTextureMode(GLW::TMPerWedgeMulti);
 			GLA()->updateTexture();
 		}
+
+
+        //mengbin
+        /*
+        if(ret && iFilter->getClass(action) & MeshFilterInterface::Algorithm)
+        {
+            if(meshDoc()->meshList.size() >=1)
+            {
+                int ind =  meshDoc()->meshList.size()-1;
+                MeshModel* m1 = meshDoc()->meshList[ind];
+                newProjectforMesh(m1, ind, "Resultant Mesh");
+            }
+
+        }
+        */
+        if(iFilter->getClass(action) & MeshFilterInterface::Mesh || iFilter->getClass(action) & MeshFilterInterface::Algorithm )
+        {
+            GLA()->resetTrackBall();
+            GLA()->setDrawMode(vcg::GLW::DMWire);
+        }
+
   }
   catch (std::bad_alloc& bdall)
   {
@@ -1442,6 +1463,7 @@ void MainWindow::postFilterExecution()
 		}
 		lastFilterAct->setText(QString("Apply filter ") + fname);
 		lastFilterAct->setEnabled(true);
+		
 	}
 	else // filter has failed. show the message error.
 	{
@@ -1490,12 +1512,6 @@ void MainWindow::postFilterExecution()
 		GLA()->updateTexture();
 	}
 
-    //mengbin
-    if(mask & MeshFilterInterface::Mesh || mask & MeshFilterInterface::Algorithm )
-    {
-        qDebug()<<"after algorithm executed:set wired";
-        GLA()->setDrawMode(vcg::GLW::DMWire);
-    }
 	delete obj;
 }
 
@@ -3026,29 +3042,72 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
     return NULL;
 }
 
-
-
-GLArea* MainWindow::newDualMeshWindow(const QString& projName)
+GLArea* MainWindow::showSelInNewWindow(const QString& projName)
 {
     MeshModel* m1 = NULL;
-	MeshModel* m2 = NULL;
-	int ind1 = -1;
-	int ind2 = -1;
-	
-    qDebug()<<"mesh size"<<meshDoc()->meshList.size();
-	//for(int ii = 0; ii < meshDoc()->meshList.size();++ii)
+    int ind1 = -1;
+
+    //for(int ii = 0; ii < meshDoc()->meshList.size();++ii)
     if(meshDoc()->meshList.size() >=1)
 	{
           m1 = meshDoc()->meshList[0];
 		  ind1 = 0;
 	}
-    if(meshDoc()->meshList.size() >=2)
-    {
-          m2 = meshDoc()->meshList[1];
-		  ind2 = 1;
-    }
 	
-    return newProjectDualMesh(m1,ind1, m2, ind2, QString("Dual Mesh Project Window"));
+    return newProjectforMesh(m1,ind1,m1->label());
+}
+
+GLArea* MainWindow::newProjectforMesh(MeshModel* m1, int ind, const QString& projName)
+{
+    qDebug()<<"MainWindow::newProjectforMesh...";
+	// MultiViewer_Container *mvcont = currentViewContainer();
+
+    MultiViewer_Container *mvcont = new MultiViewer_Container(mdiarea);
+    mdiarea->addSubWindow(mvcont);
+      connect(mvcont,SIGNAL(updateMainWindowMenus()),this,SLOT(updateMenus()));
+      filterMenu->setEnabled(!filterMenu->actions().isEmpty());
+      if (!filterMenu->actions().isEmpty())
+          updateSubFiltersMenu(true,false);
+	
+		  
+		   if (projName.isEmpty())
+          {
+              static int docCounter = 1;
+              mvcont->meshDoc.setDocLabel(QString("Project_") + QString::number(docCounter));
+              ++docCounter;
+          }
+          else
+              mvcont->meshDoc.setDocLabel(projName);
+          mvcont->setWindowTitle(mvcont->meshDoc.docLabel());
+		
+		
+      GLLMArea *gla=new GLLMArea(mvcont, &currentGlobalParams);
+	  //GLArea *gla_left=new GLArea(mvcont, &currentGlobalParams);
+      if (gla != NULL)
+      {
+	  
+		  if(m1 != NULL){
+			gla->md()->addExistingMesh(m1,true);
+            //qDebug()<<"refCount 1"<<m1->refCount;
+			m1->refCount++;
+            gla->setModelInd(ind);
+		  }
+
+		 mvcont->addView(gla, Qt::Horizontal);
+		  gla->setDrawMode(vcg::GLW::DMWire);
+		   if (gla->mvc() == NULL)
+              return NULL;
+          gla->mvc()->showMaximized();
+         if(GLA()->isRaster()){
+			gla->setIsRaster(true);
+			if(this->meshDoc()->rm()->id()>=0)
+				gla->loadRaster(this->meshDoc()->rm()->id());
+		}
+		  gla->resetTrackBall();
+		  gla->update(); //now there is the container
+	  }
+	  
+	  return gla;
 }
 
 MeshModel* MainWindow::newProjectAddMesh(const QString& projName, const QString& meshName)
