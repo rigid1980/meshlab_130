@@ -66,11 +66,13 @@ void GLLMArea::mousePressEvent(QMouseEvent*e)
 	{
         if(md()->getMesh(meshind) != md()->mm())
         {
+            /*
             foreach(MeshModel *mp, this->md()->meshList)
             {
                 this->meshSetVisibility(mp, false);
             }
             this->meshSetVisibility(md()->getMesh(meshind), true);
+            */
             this->md()->setCurrentMesh(meshind);
             update();
         }
@@ -130,7 +132,7 @@ void GLLMArea::paintEvent(QPaintEvent */*event*/)
 	/*if(rm.backFaceCull) glEnable(GL_CULL_FACE);
 	else glDisable(GL_CULL_FACE);*/
 
-	if(!this->md()->isBusy())
+    //if(!this->md()->isBusy())
 	{
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		if (iRenderer)
@@ -194,7 +196,8 @@ void GLLMArea::paintEvent(QPaintEvent */*event*/)
 				}
 
                 //mengbin
-                int sens = (int)800/(int(sqrt((double)mp->cm.vert.size()))-1);
+                int sens = (int)width()/(int(sqrt((double)mp->cm.vert.size()))-1);
+				int maxPs = (int)width()/40;
                 int j=0;
                 if(meshVisibilityMap[mp->id()])
                 for (std::vector<int>::iterator it = mp->cm.selVertVector.begin() ; it != mp->cm.selVertVector.end(); ++it)
@@ -203,7 +206,7 @@ void GLLMArea::paintEvent(QPaintEvent */*event*/)
                     int ii = *(it);
                     CMeshO::VertexPointer vp = &mp->cm.vert[ii];
                     if(vp != NULL){
-                        int ps = 20<(sens/2)?20:sens/2;
+                        int ps = maxPs<(sens/2)?maxPs:sens/2;
                         glPointSize(ps);
                         //glPointSize(sens/2);
 						glEnable( GL_POINT_SMOOTH );

@@ -50,6 +50,7 @@
 #include "../common/mlapplication.h"
 
 #include "gllmarea.h"
+//#include "teichmuller.h"
 
 using namespace std;
 using namespace vcg;
@@ -3044,17 +3045,20 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 
 GLArea* MainWindow::showSelInNewWindow(const QString& projName)
 {
-    MeshModel* m1 = NULL;
-    int ind1 = -1;
+    MeshModel* m1 = meshDoc()->mm();
 
-    //for(int ii = 0; ii < meshDoc()->meshList.size();++ii)
-    if(meshDoc()->meshList.size() >=1)
-	{
-          m1 = meshDoc()->meshList[0];
-		  ind1 = 0;
-	}
-	
-    return newProjectforMesh(m1,ind1,m1->label());
+    if( m1 == NULL) return NULL;
+
+	qDebug()<<"model index"<<m1->id();
+    int i=0;
+    foreach(MeshModel *mmp, meshDoc()->meshList)
+    {
+      if(mmp == m1)  break;
+	  i++;
+    }
+	qDebug()<<"model index 2 "<<i;
+	if(i == meshDoc()->meshList.size()) return NULL;
+    return newProjectforMesh(m1,i,m1->label());
 }
 
 GLArea* MainWindow::newProjectforMesh(MeshModel* m1, int ind, const QString& projName)

@@ -24,11 +24,12 @@
 #include <GL/glew.h>
 #include "algo_teich.h"
 #include <QGLFramebufferObject>
-#include <vcg/math/gen_normal.h>
+//#include <vcg/math/gen_normal.h>
 #include <wrap/qt/checkGLError.h>
-#include <iostream>
+//#include <iostream>
 #include <meshlab/mainwindow.h>
 
+#include "teichmuller.h"
 
 using namespace std;
 using namespace vcg;
@@ -139,25 +140,17 @@ void AlgoTeichPlugin::initParameterSet(QAction *action, MeshModel &m, RichParame
 				"use landmark",
 				"If true, landmark will be used in calculation."));
 			
-    parlst.addParam(new RichFloat ("width",1.0,"target width", "target width"));
-    parlst.addParam(new RichFloat ("height",1.0,"target height", "target height"));
+    parlst.addParam(new RichFloat ("width",1.0,"target width", "target width  range (0,1]"));
+    parlst.addParam(new RichFloat ("height",1.0,"target height", "target height  range (0,1]"));
     parlst.addParam(new RichFloat ("mubound",1.0,"mu bound", "mu bound"));
-	parlst.addParam(new RichInt ("loops",100,"loop times", "loop times"));
+	parlst.addParam(new RichInt ("loops",100,"loop times", "loop times (integer)"));
 	parlst.addParam(new RichFloat("epsilon",0.01,"epsilon", "epsilon"));
 }
 bool AlgoTeichPlugin::applyFilter(QAction *algo, MeshDocument &md,
                              RichParameterSet & parlst, vcg::CallBackPos *cb)
 {
 
-	int li = parlst.getEnum("sourcemesh");
-	int ri = parlst.getEnum("sourcemesh");
-    if(li<0 ) return false;
-   MeshModel* pm  = md.meshList[li];
-   if(pm == NULL) return false;
-   
-   //par.getInt
-   /*
-   MainWindow* mainwindow;
+	MainWindow* mainwindow;
     foreach (QWidget *widget, QApplication::topLevelWidgets())
     {
         MainWindow* mainwindow = dynamic_cast<MainWindow*>(widget);
@@ -166,47 +159,292 @@ bool AlgoTeichPlugin::applyFilter(QAction *algo, MeshDocument &md,
             break;
         }
     }
-	if (mainwindow == NULL)
-        {
-            return false;
-        }
-		
-    MeshModel* prm = mainwindow->newProjectAddMesh("resultant mesh","resultant mesh");
-		
 
-    GLArea* newGLA = mainwindow->newProject("resultant mesh");
+	
+	int li = parlst.getEnum("sourcemesh");
+	int ri = parlst.getEnum("targetmesh");
+    if(li<0 ) return false;
+   MeshModel* pm  = md.meshList[li];
+   if(pm == NULL) 
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("Source mesh could not be empty!"));
+		return false;
+   }
+    if(ri<0 ) return false;
+   MeshModel* ptm  = md.meshList[ri];
+   if(ptm == NULL) 
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("Target mesh could not be empty!"));
+		return false;
+   }
+   
+   double width = parlst.getFloat("width");
+	double height = parlst.getFloat("height");
+	double mubound = parlst.getFloat("mubound");
+	if(width <= 0 ) 
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("Width must be greater than zero!"));
+		return false;
+   }
+   if(height <= 0 ) 
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("height must be greater than zero!"));
+		return false;
+   }
+   if(mubound  <= 0 ) 
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("Mu bound must be greater than zero!"));
+		return false;
+   }
+	
+	
+	double loops = parlst.getInt("loops");
+	double epsilon = parlst.getFloat("epsilon");
+	if(loops <= 0 ) 
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("loops must be greater than zero!"));
+		return false;
+   }
+   if(epsilon <= 0 || epsilon >=1) 
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("0<epsilon<1 !"));
+		return false;
+   }
 
-    MeshModel* prm = newGLA->md()->addNewMesh("","resultant mesh",true);
+   if(pm->cm.selVertVector.size() != ptm->cm.selVertVector.size())
+   {
+		QMessageBox::critical(mainwindow, tr("Parameter Error"), QString("Landmark size should be equal!"));
+		return false;
+   }
+   
+   bool uselandmark = parlst.getBool("uselandmark");
+   
+    QString fileName = pm->label();
+	fileName.remove(fileName.lastIndexOf('.'), fileName.length());
+	QString extension = pm->label();
+	extension.remove(0, pm->label().lastIndexOf('.')+1);
+	qDebug()<<"extension  "<<extension;
+		
+   QString label = fileName.append(".tmap");
+   if(!extension.isEmpty())
+    fileName.append(".").append(extension);
+	
+	/*
+	QString fileName = pm->fullName();
+	QString extension = QString("lmk");
+	QString lmkfileName = fileName.append(".").append(extension);
 	*/
-
-	QString label = pm->label().append("tmap");
-   MeshModel* prm = md.addNewMesh("","resultant mesh",true);
-
-    pm->cm.vert;         //vertics
-    pm->cm.face;            //faces
-    pm->cm.selVertVector;   //landmarks
-
-
+	
+    QString fullName = pm->pathName().append("/").append(fileName);
+    MeshModel* prm = md.addNewMesh("","",true);
+	prm->setFileName(fullName);
+	prm->meshModified() = true;
+	
+    //output
+   	VertexZ	fz;
+	ArrayZ	mu;
+	
+    // input
+    Eigen::ArrayX3i	face;
+    VertexZ z;
+	
     vcg::tri::Append<CMeshO,CMeshO>::MeshCopy(prm->cm,pm->cm);
-
     CMeshO::VertexIterator vi;
+    z.resize(pm->cm.vert.size());
+	qDebug()<<"original mesh size is "<<pm->cm.vert.size();
+    int i = 0;
     for(vi = pm->cm.vert.begin(); vi != pm->cm.vert.end(); ++vi)
     {
-        //prm->cm.addVertex (/*const aol::Vec3< RealType > &coords*/);
-     // qDebug("pos x: %f y: %f",(*vi).P()[0],(*vi).P()[1]);
-    //(*vi).P()[0] = (*vi).P()[0] - (wld * halfw);
-    //(*vi).P()[1] = (*vi).P()[1] - (hld * halfh);
-    //  (*vi).P()[0] = (*vi).P()[0] - totalw/2;
-    //  (*vi).P()[1] = (*vi).P()[1] - totalh/2;
-     // qDebug("after pos x: %f y: %f",(*vi).P()[0],(*vi).P()[1]);
+       z(i++) = cdouble((*vi).P()[0], (*vi).P()[1]);
     }
+	
+	std::vector<int> vfi;
+	std::vector<int> vfj;
+	std::vector<int> vfk;	
+	
+	i=0;
     CMeshO::FaceIterator vf;
     for(vf = pm->cm.face.begin(); vf!= pm->cm.face.end(); ++vf)
     {
-				//(*vf).V()
+		//qDebug()<<"point 0 of face is "<<(unsigned int)((*vf).V(0) - &pm->cm.vert[0]);
+		vfi.push_back((unsigned int)((*vf).V(0) - &pm->cm.vert[0]));
+        vfj.push_back((unsigned int)((*vf).V(1) - &pm->cm.vert[0]));
+		vfk.push_back((unsigned int)((*vf).V(2) - &pm->cm.vert[0]));
+		i++;
     }
 
+	face.resize(vfi.size(),3);
+	face.col(0) = Map<ArrayXi>(vfi.data(),vfi.size());
+	face.col(1) = Map<ArrayXi>(vfj.data(),vfj.size());
+	face.col(2) = Map<ArrayXi>(vfk.data(),vfk.size());
+	
+	TriangleMesh mesh(face,z,TriangleMesh::COMPLEX_2D);
+	
+	Index	landmark;
+    ArrayZ	target;
+	if(uselandmark)
+	{
+		landmark.resize(pm->cm.selVertVector.size());
+	    qDebug()<<"landmark size "<<pm->cm.selVertVector.size();
+		landmark = Map<Index>(pm->cm.selVertVector.data(),pm->cm.selVertVector.size());
+		target.resize(ptm->cm.selVertVector.size());
+		std::vector<cdouble> vt;
+			
+		i=0;
+		for (std::vector<int>::iterator it = ptm->cm.selVertVector.begin() ; it != ptm->cm.selVertVector.end(); ++it)
+		{
+			int ii = *(it);
+			CMeshO::VertexPointer vp = &ptm->cm.vert[ii];
+			//qDebug()<<"sel "<<ii<<" "<<vp->P()[0]<<" "<<vp->P()[1];
+			vt.push_back(cdouble(vp->P()[0],vp->P()[1]));
+			
+		}
+		target.resize(vt.size());
+		target = Map<ArrayZ>(vt.data(),vt.size());
+	}
+	
+	
+    Scale	s(1,1,1);
+    //Option	opt(0.001,0.95,100);
+    Option	opt(epsilon,mubound,loops);
+	/*
+	qDebug()<<"zzzzzzzzzz";
+	for(i=0;i<z.size();i++){
+		qDebug()<<z(i).real()<<" "<<z(i).imag();
+	}
+	qDebug()<<"landmark";
+	for(i=0;i<landmark.size();i++){
+		qDebug()<<landmark(i);
+	}
+	qDebug()<<"target";
+	for(i=0;i<target.size();i++){
+		qDebug()<<target(i).real()<<" "<<target(i).imag();
+	}
+	*/
+    int state = techmuller_map_with_boundary(fz, mu, mesh, landmark, target, s, opt);
+	qDebug()<<"result state is "<<state;
+	/*
+	const VertexZ & z	 = mesh.z();
+	const Face	  & face = mesh.face();
+	mesh.Clear();
+	for(i=0;i<fz.size();i++)
+	{
+		double fu1 = fz(i).real();
+		double fv1 = fz(i).imag();
+		pm->cm.vert;
+	}
+	*/
+	i=0;
+	for(vi = prm->cm.vert.begin(); vi != prm->cm.vert.end(); ++vi)
+    {
+       if(i<fz.size())
+	   {
+			(*vi).P()[0] = fz(i).real();
+			(*vi).P()[1] = fz(i).imag();
+            (*vi).P()[2] = 0;
+	   }
+	   i++;
+    }
+
+	for (std::vector<int>::iterator it = pm->cm.selVertVector.begin() ; it != pm->cm.selVertVector.end(); ++it)
+	{
+		prm->cm.selVertVector.push_back(*(it));	
+	}
+	
+	
+	return true;
+}
+bool AlgoTeichPlugin::applyFilter2(QAction *algo, MeshDocument &md,
+                             RichParameterSet & parlst, vcg::CallBackPos *cb)
+{
+MainWindow* mainwindow;
+    foreach (QWidget *widget, QApplication::topLevelWidgets())
+    {
+        MainWindow* mainwindow = dynamic_cast<MainWindow*>(widget);
+        if (mainwindow)
+        {
+            break;
+        }
+    }
+
+	int li = parlst.getEnum("sourcemesh");
+	int ri = parlst.getEnum("sourcemesh");
+    if(li<0 ) return false;
+   MeshModel* pm  = md.meshList[li];
+   if(pm == NULL) return false;
+    if(ri<0 ) return false;
+   MeshModel* ptm  = md.meshList[ri];
+   if(ptm == NULL) return false;
+   if(pm->cm.selVertVector.size() != pm->cm.selVertVector.size())
+   {
+   }
+   
+   QString label = pm->label().append(".tmap");
+   MeshModel* prm = md.addNewMesh("",label,true);
+
+  
+    //output
+   	VertexZ	fz;
+	ArrayZ	mu;
+	
+    // input
+    Eigen::ArrayX3i	face;
+    VertexZ z;
+	
+    vcg::tri::Append<CMeshO,CMeshO>::MeshCopy(prm->cm,pm->cm);
+
+    CMeshO::VertexIterator vi;
+	int i = 0;
+    for(vi = pm->cm.vert.begin(); vi != pm->cm.vert.end(); ++vi)
+    {    
+	   z(i++) = cdouble((*vi).P()[0], (*vi).P()[1]);
+    }
+	
+	std::vector<int> vfi;
+	std::vector<int> vfj;
+	std::vector<int> vfk;	
+	
+	i=0;
+    CMeshO::FaceIterator vf;
+    for(vf = pm->cm.face.begin(); vf!= pm->cm.face.end(); ++vf)
+    {
+	//indices.push_back((unsigned int)((*fi).V(0) - &(*m->vert.begin())));
+		
+        //vfi.push_back((unsigned int)((*vf).V(0) - (&(pm->cm.vert.begin()))));
+		qDebug()<<"point 0 of face is "<<(unsigned int)((*vf).V(0) - &pm->cm.vert[0]);
+		vfi.push_back((unsigned int)((*vf).V(0) - &pm->cm.vert[0]));
+        vfj.push_back((unsigned int)((*vf).V(1) - &pm->cm.vert[0]));
+		vfk.push_back((unsigned int)((*vf).V(2) - &pm->cm.vert[0]));
+		i++;
+    }
+	
+	qDebug()<<"mesh fase size is "<<i;
+	
+	face.resize(vfi.size(),3);
+	face.col(0) = Map<ArrayXi>(vfi.data(),vfi.size());
+	face.col(1) = Map<ArrayXi>(vfj.data(),vfj.size());
+	face.col(2) = Map<ArrayXi>(vfk.data(),vfk.size());
+
+
+//	for(vl = pm->cm.selVertVector.begin(); vl!= pm->cm.selVertVector.end(); ++vl)
+//    {
+//				//(*vf).V()
+//    }
+
     
+
+
+   // TriangleMesh mesh(face,z,TriangleMesh::COMPLEX_2D);
+
+    Index	landmark;
+    ArrayZ	target;
+
+    Scale	s(1,1,1);
+    Option	opt(0.001,0.95,100);
+
+
+    //int state = techmuller_map_with_boundary(fz, mu, mesh, landmark, target, s, opt);
+
     return true;
 }
 	

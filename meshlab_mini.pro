@@ -22,10 +22,12 @@ teichplugins/landmark_serialize     \
 teichplugins/algo_teich              \
 teichplugins/map_cons              \
 
-#teichplugins/switch_mesh     \
-#sampleplugins/sampleedit    \
+external/map_cons              \
 
-#	    meshlabplugins/io_expe \
+#teichplugins/switch_mesh     \
+sampleplugins/sampleedit    \
+
+            meshlabplugins/io_base \
 #	    meshlabplugins/io_collada \
 #meshlabplugins/io_3ds \
 #meshlabplugins/io_u3d \

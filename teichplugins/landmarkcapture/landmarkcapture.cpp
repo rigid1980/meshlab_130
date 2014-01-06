@@ -141,19 +141,21 @@ void LandmarkCapturePlugin::Decorate(MeshModel &m, GLArea * gla, QPainter *p)
             ==m.cm.selVertVector.end()){
 			    m.cm.selVertVector.push_back(ret);
 				//        CMeshO::VertexPointer  vp = vertics[idx];
-				Log("Nearest point %d: %d",ret,m.cm.selVertVector.size());
+                //Log("Nearest point %d: %d",ret,m.cm.selVertVector.size());
 				//gla->repaint();
-                drawSingleLandmark(&m, ret,m.cm.selVertVector.size(),p);
+                drawSingleLandmark(&m, ret,m.cm.selVertVector.size(),p,gla);
 			}
  }
 }
 
-void LandmarkCapturePlugin::drawSingleLandmark(MeshModel * mp, int ii, int j, QPainter *p)
+void LandmarkCapturePlugin::drawSingleLandmark(MeshModel * mp, int ii, int j, QPainter *p,GLArea * gla)
 {
-	int sens = (int)800/(int(sqrt((double)mp->cm.vert.size()))-1);
+	int sens = (int)gla->width()/(int(sqrt((double)mp->cm.vert.size()))-1);
+	int maxPs = (int)gla->width()/40;
+                
     CMeshO::VertexPointer vp = &mp->cm.vert[ii];
 	if(vp != NULL){
-		int ps = 20<(sens/2)?20:sens/2;
+		int ps = maxPs<(sens/2)?maxPs:sens/2;
 		glPointSize(ps);
 		//glPointSize(sens/2);
 		glEnable( GL_POINT_SMOOTH );
@@ -443,7 +445,7 @@ void LandmarkCapturePlugin::EndEdit(MeshModel &m, GLArea *gla )
     Log("end on mesh : %s",m.shortName());
     //gla->md()->updateMeshSelected();
    //m.updateMeshSelected();
-     Log("selVertVector size: %d",m.cm.selVertVector.size());
+     Log("landmark size: %d",m.cm.selVertVector.size());
 
   //gla->repaint();
      //gla->updateMeshSelected();

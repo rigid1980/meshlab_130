@@ -60,7 +60,7 @@ public:
     void findNearest(CMeshO::FacePointer fp, int &fp_idx, MeshModel &m, int &mm_idx);
     int  transform(vcg::Matrix44f& m, int screenX, int screenY);
 	int findScreenNearest(MeshModel &m,int screenX, int screenY);
-	void drawSingleLandmark(MeshModel * mp, int ii, int j, QPainter *p);
+    void drawSingleLandmark(MeshModel * mp, int ii, int j, QPainter *p,GLArea * gla);
 };
 
 #endif

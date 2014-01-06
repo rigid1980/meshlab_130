@@ -764,10 +764,6 @@ void MainWindow::fillFilterMenu()
     filterMenu->addMenu(filterMenuMeshLayer);
     filterMenuRasterLayer = new MenuWithToolTip(tr("Raster Layer"),this);
     filterMenu->addMenu(filterMenuRasterLayer);
-    //mengbin
-    MenuDualLayer   = new MenuWithToolTip(tr("Dual Mesh"),this);
-    filterMenu->addMenu(MenuDualLayer);
-    /////////////
     filterMenuRangeMap = new MenuWithToolTip(tr("Range Map"),this);
     filterMenu->addMenu(filterMenuRangeMap);
     filterMenuPointSet = new MenuWithToolTip(tr("Point Set"),this);

@@ -69,6 +69,10 @@ public:
                                                MeshDocument &md,
                                                RichParameterSet & /*parent*/,
 	                                           vcg::CallBackPos * cb) ;
+    virtual       bool        applyFilter2     (QAction *filter,
+                                               MeshDocument &md,
+                                               RichParameterSet & /*parent*/,
+                                               vcg::CallBackPos * cb) ;
 	
 private:
 	bool init;

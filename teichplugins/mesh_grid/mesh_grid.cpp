@@ -110,8 +110,6 @@ void MeshGridPlugin::initParameterSet(QAction *action, MeshModel &m, RichParamet
 bool MeshGridPlugin::applyFilter(QAction *algo, MeshDocument &md,
                              RichParameterSet & par, vcg::CallBackPos *cb)
 {
-    md.addNewMesh("","this->filterName(ID(filter))");
-  MeshModel &m=*(md.mm());
 
   int cols = par.getInt("numVertX");
     int rows = par.getInt("numVertY");
@@ -127,6 +125,10 @@ bool MeshGridPlugin::applyFilter(QAction *algo, MeshDocument &md,
     if(w <= 0 || h <= 0) {
       return false;
     }
+
+    md.addNewMesh("",QString("%1_%2").arg(rows).arg(cols));
+  MeshModel &m=*(md.mm());
+
 
 
     // use Grid function to generate Grid

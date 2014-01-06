@@ -432,7 +432,7 @@ void GLArea::paintEvent(QPaintEvent */*event*/)
 	/*if(rm.backFaceCull) glEnable(GL_CULL_FACE);
 	else glDisable(GL_CULL_FACE);*/
 
-	if(!this->md()->isBusy())
+    //if(!this->md()->isBusy())
 	{
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		if (iRenderer)
@@ -488,7 +488,8 @@ void GLArea::paintEvent(QPaintEvent */*event*/)
 				}
 
                 //mengbin
-                int sens = (int)800/(int(sqrt((double)mp->cm.vert.size()))-1);
+                int sens = (int)width()/(int(sqrt((double)mp->cm.vert.size()))-1);
+				int maxPs = (int)width()/40;
                 int j=0;
 				if(meshVisibilityMap[mp->id()])
                 for (std::vector<int>::iterator it = mp->cm.selVertVector.begin() ; it != mp->cm.selVertVector.end(); ++it)
@@ -497,7 +498,7 @@ void GLArea::paintEvent(QPaintEvent */*event*/)
                     int ii = *(it);
                     CMeshO::VertexPointer vp = &mp->cm.vert[ii];
                     if(vp != NULL){
-                        int ps = 20<(sens/2)?20:sens/2;
+                        int ps = maxPs<(sens/3)?maxPs:sens/3;
                         glPointSize(ps);
                         glEnable( GL_POINT_SMOOTH );
 						
@@ -750,7 +751,7 @@ void GLArea::displayInfo(QPainter *painter)
 		}
 		else
 		{
-            col1Text += QString("Current Mesh: %1\n").arg(mm()->shortName());
+            col1Text += QString("Current Mesh: %1\n").arg(mm()->label());
 			col1Text += QString("Vertices: %1 (%2)\n").arg(mm()->cm.vn).arg(this->md()->vn());
 			col1Text += QString("Faces: %1 (%2)\n").arg(mm()->cm.fn).arg(this->md()->fn());
 		}
