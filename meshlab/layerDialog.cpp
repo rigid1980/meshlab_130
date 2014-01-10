@@ -241,7 +241,7 @@ void LayerDialog::showContextMenu(const QPoint& pos)
 				MainWindow* mainwindow = dynamic_cast<MainWindow*>(widget);
 				if (mainwindow)
 				{
-                    //mainwindow->meshLayerMenu()->addAction(mainwindow->showDualMeshAct);
+                    mainwindow->meshLayerMenu()->addAction(mainwindow->showDualMeshAct);
 					mainwindow->meshLayerMenu()->popup(ui->meshTreeWidget->mapToGlobal(pos));
 					return;
 				}
@@ -253,7 +253,7 @@ void LayerDialog::showContextMenu(const QPoint& pos)
 				if (mainwindow)
 				{
 				//meshMenu = new QMenu(this);
-                    //mainwindow->meshLayerMenu()->addAction(mainwindow->showDualMeshAct);
+                    mainwindow->meshLayerMenu()->addAction(mainwindow->showDualMeshAct);
                     mainwindow->meshLayerMenu()->popup(ui->meshTreeWidget->mapToGlobal(pos));
 					return;
 				}

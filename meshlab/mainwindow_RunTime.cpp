@@ -2990,7 +2990,7 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 			gla_left->md()->addExistingMesh(m1,true);
             //qDebug()<<"refCount 1"<<m1->refCount;
 			m1->refCount++;
-            gla_left->setModelInd(ind1);
+            gla_left->setModelInd(0);
 		  }
 
 		 mvcont->addView(gla_left, Qt::Horizontal);
@@ -3023,7 +3023,7 @@ GLArea* MainWindow::newProjectDualMesh(MeshModel* m1, int ind1, MeshModel* m2, i
 			gla_right->md()->addExistingMesh(m2,true);
             //qDebug()<<"refCount 2"<<m2->refCount;
 			m2->refCount++;
-            gla_right->setModelInd(ind2);
+            gla_right->setModelInd(1);
 		  }
 		
 		 mvcont->addView(gla_right, Qt::Horizontal);
@@ -3050,15 +3050,17 @@ GLArea* MainWindow::showSelInNewWindow(const QString& projName)
     if( m1 == NULL) return NULL;
 
 	qDebug()<<"model index"<<m1->id();
-    int i=0;
+    int i=m1->id();
+	/*
     foreach(MeshModel *mmp, meshDoc()->meshList)
     {
       if(mmp == m1)  break;
 	  i++;
     }
 	qDebug()<<"model index 2 "<<i;
+	*/
 	if(i == meshDoc()->meshList.size()) return NULL;
-    return newProjectforMesh(m1,i,m1->label());
+    return newProjectforMesh(m1,0,m1->label());
 }
 
 GLArea* MainWindow::newProjectforMesh(MeshModel* m1, int ind, const QString& projName)
